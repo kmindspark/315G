@@ -8,7 +8,7 @@
 #pragma config(Motor,  port4,           flipflop,      tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port5,           armL,          tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port6,           armR,          tmotorVex393_MC29, openLoop)
-#pragma config(Motor,  port7,           chump,         tmotorVex393_MC29, openLoop)
+#pragma config(Motor,  port7,           claw,         tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port8,           pf,            tmotorVex393HighSpeed_MC29, openLoop, reversed)
 #pragma config(Motor,  port9,           pb,            tmotorVex393HighSpeed_MC29, openLoop, reversed)
 #pragma config(Motor,  port10,          mogoR,         tmotorVex393_HBridge, openLoop, reversed)
@@ -20,8 +20,8 @@
 #pragma autonomousDuration(20)
 #pragma userControlDuration(120)
 
-
 #include "Vex_Competition_Includes.c"   //Main competition background code...do not modify!
+#include "autons-G.c"
 
 #define FLIPFLOPDOWN 1370
 #define FLIPFLOPUP 3750
@@ -43,16 +43,16 @@ int filter(int input){
 
 void closeClaw()
 {
-	motor[chump] = 127;
+	motor[claw] = 127;
 	wait1Msec(500);
-	motor[chump] = 30;
+	motor[claw] = 30;
 }
 
 void openClaw()
 {
-	motor[chump] = -127;
+	motor[claw] = -127;
 	wait1Msec(500);
-	motor[chump] = 0;
+	motor[claw] = 0;
 }
 
 void assignDriveMotors(int lp, int rp){
@@ -287,70 +287,51 @@ task flipfloptask {
 	}
 }
 
-task chumptask {
+task clawtask {
 	while (true) {
 		if (vexRT[Btn7U] == 1){
 			while (vexRT[Btn7U] == 1){
-				motor[chump] = 75;
+				motor[claw] = 75;
 			}
-			motor[chump] = 29;
+			motor[claw] = 29;
 		}
 		if (vexRT[Btn7D] == 1){
 			while (vexRT[Btn7D] == 1){
-				motor[chump] = -75;
+				motor[claw] = -75;
 			}
-			motor[chump] = 0;
+			motor[claw] = 0;
+		}
+	}
+}
+
+task coneCounter(){
+	while (true){
+		if (vexRT[Btn7DXmtr2]){
+			currentConeCount = 3;
+		}
+		if (vexRT[Btn7LXmtr2]){
+			currentConeCount = 6;
+		}
+		if (vexRT[Btn7UXmtr2]){
+			currentConeCount = 9;
+		}
+		if (vexRT[Btn7RXmtr2]){
+			currentConeCount = 12;
+		}
+		if (vexRT[Btn8DXmtr2]){
+			currentConeCount = 0;
+		}
+		if (vexRT[Btn8LXmtr2]){
+			currentConeCount--;
+		}
+		if (vexRT[Btn8RXmtr2]){
+			currentConeCount++;
 		}
 	}
 }
 
 void pre_auton(){
 
-}
-
-void autonomousConeIn20Pt(bool reverse, bool stopAfterTime)
-{
-	closeClaw();
-	forward(127,300);
-	//turnRight(127,250,reverse);
-	//turnLeft(127,250,reverse);
-	assignArmMotors(127);
-	assignMogoMotors(-127);
-	forward(127,600);
-	assignArmMotors(10);
-	wait1Msec(400);
-	assignMogoMotors(0);
-	forward(127, 650);
-	assignMogoMotors(127);
-	wait1Msec(1300);
-	assignMogoMotors(0);
-	wait1Msec(200);
-	assignArmMotors(-127);
-	wait1Msec(400);
-	assignArmMotors(0);
-	assignFlipFlop(50);
-	wait1Msec(500);
-	assignFlipFlop(0);
-	openClaw();
-	if (stopAfterTime){
-		return;
-	}
-	assignArmMotors(127);
-	wait1Msec(600);
-	assignArmMotors(10);
-	backward(127,1150);
-	turnLeft(127,600,reverse);
-	backward(80,700);
-	forward(127,400);
-	turnLeft(127, 530,reverse);
-	forward(127, 800);
-	turnLeft(127, 450, reverse);
-	forward(127, 700);
-	assignMogoMotors(-127);
-	forward(127, 600);
-	wait1Msec(300);
-	assignMogoMotors(0);
-	backward(127, 1000);
 }
 
 task autonomous()
@@ -361,7 +342,8 @@ task autonomous()
 task usercontrol(){
 	startTask(drive);
 	startTask(arm);
-	startTask(chumptask);
+	startTask(clawtask);
 	startTask(flipfloptask);
 	startTask(mogo);
+	startTask(coneCounter)
 }
