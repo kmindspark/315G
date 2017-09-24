@@ -24,7 +24,12 @@
 #include "Vex_Competition_Includes.c"   //Main competition background code...do not modify!
 #include "autons.c"
 
+#define vexCompetitionState (nVexRCReceiveState & (vrDisabled | vrAutonomousMode))
+
+TVexReceiverState competitionState;
 int currentConeCount = 0;
+int autonChoice = 0;
+bool left = true;
 
 int filter(int input){
 	if (input > 20 || input < -20){
@@ -202,15 +207,85 @@ task coneCounter(){
 }
 
 void pre_auton(){
+	bLCDBacklight = true;
+	displayLCDCenteredString("Initializing gyro...")
 	SensorType[gyro] = sensorNone;
 	wait1Msec(2000);
 	SensorType[gyro] = sensorGyro;
 	wait1Msec(2000);
+	competitionState = vexCompetitionState;
+	clearLCDLine(0);
+	clearLCDLine(1);
+	bool chosen = false;
+	displayLCDCenteredString(0, autons[autonChoice]);
+	clearTimer(T1);
+	while (!chosen && vexCompetitionState == competitionState){
+		waitForPress();
+		if (nLCDButtons == RIGHTBUTTON){
+			waitForRelease();
+			if (autonChoice < (sizeof(autons)/2) - 1){
+				autonChoice++;
+			}
+			clearLCDLine(0);
+			displayLCDCenteredString(0, autons[autonChoice]);
+		}
+		else if (nLCDButtons == LEFTBUTTON){
+			waitForRelease();
+			if (autonChoice > 0){
+				autonChoice--;
+			}
+			clearLCDLine(0);
+			displayLCDCenteredString(0, autons[autonChoice]);
+		}
+		else if (nLCDButtons == CENTERBUTTON){
+			waitForRelease();
+			clearLCDLine(0);
+			displayLCDCenteredString(0, autons[autonChoice]);
+			chosen = true;
+		}
+	}
+	chosen = false;
+	clearLCDLine(0);
+	displayLCDCenteredString(0, "left  or  right");
+	while (!chosen && vexCompetitionState == competitionState){
+		waitForPress();
+		if (nLCDButtons == RIGHTBUTTON){
+			waitForRelease();
+			left = false;
+			chosen = true;
+		}
+		else if (nLCDButtons == LEFTBUTTON){
+			waitForRelease();
+			left = true;
+			chosen = true;
+		}
+	}
+	clearLCDLine(0);
+	clearLCDLine(1);
+	if (left){
+		displayLCDCenteredString(0, "left");
+	}
+	else {
+		displayLCDCenteredString(0, "right");
+	}
+	displayLCDCenteredString(1, autons[autonChoice]);
+
 }
 
 task autonomous()
 {
-	autonomousConeIn20Pt(false, false);
+	if (left) {
+		switch (autonChoice){
+			case 1: autonomousConeIn20Pt(false, false); break;
+			case 2: autonomousConeIn20Pt(false, true); break;
+			default: break;
+		}
+	} else {
+		switch (autonChoice){
+			case 1: autonomousConeIn20Pt(true, false); break;
+			case 2: autonomousConeIn20Pt(true, true); break;
+		}
+	}
 }
 
 task usercontrol(){

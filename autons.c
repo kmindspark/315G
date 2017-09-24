@@ -1,6 +1,8 @@
 
 #include "helperfunctions.c"
 
+string autons[2] = {"No Auton", "20 Pt Cone", "Score 1 Cone"};
+
 void autonomousConeIn20Pt(bool reverse, bool stopAfterTime)
 {
 	closeClaw();
@@ -32,12 +34,12 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime)
 	wait1Msec(600);
 	assignArmMotors(10);
 	backward(127,1150);
-	turnLeft(127,600,reverse);
+	turnRight(127,600,reverse);
 	backward(80,700);
 	forward(127,400);
-	turnLeft(127, 530,reverse);
+	turnRight(127, 530,reverse);
 	forward(127, 800);
-	turnLeft(127, 450, reverse);
+	turnRight(127, 450, reverse);
 	forward(127, 700);
 	assignMogoMotors(-127);
 	forward(127, 600);
