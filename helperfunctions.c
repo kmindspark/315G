@@ -3,8 +3,8 @@
 
 int positions[14]={100, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600};
 
-void turnLeft(int power, int time, bool reverse);
-void turnRight(int power, int time, bool reverse);
+void turnLeft(int power, int degrees, bool reverse);
+void turnRight(int power, int degrees, bool reverse);
 
 void closeClaw()
 {
@@ -50,29 +50,35 @@ void backward(int power, int time)
 	assignDriveMotors(0,0);
 }
 
-void turnRight(int power, int time, bool reverse)
+void turnRight(int power, int degrees, bool reverse)
 {
 	if (reverse)
 	{
-		turnLeft(power,time,false);
+		turnLeft(power,degrees,false);
 		return;
 	}
+	SensorValue[gyro] = 0;
 	assignDriveMotors(power,-power);
-	wait1Msec(time);
+	while (abs(SensorValue[gyro]) < degrees){
+		//do nothing
+	}
 	assignDriveMotors(-10,10);
 	wait1Msec(100);
 	assignDriveMotors(0,0);
 }
 
-void turnLeft(int power, int time, bool reverse)
+void turnLeft(int power, int degrees, bool reverse)
 {
 	if (reverse)
 	{
-		turnRight(power,time,false);
+		turnRight(power,degrees,false);
 		return;
 	}
+	SensorValue[gyro] = 0;
 	assignDriveMotors(-power,power);
-	wait1Msec(time);
+	while (abs(SensorValue[gyro]) < degrees){
+		//do nothing
+	}
 	assignDriveMotors(10,-10);
 	wait1Msec(100);
 	assignDriveMotors(0,0);
