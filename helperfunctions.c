@@ -157,3 +157,15 @@ void assignMogoMotors(int power){
 	motor[mogoL] = power;
 	motor[mogoR] = -power;
 }
+
+void waitForPress(){
+	while (nLCDButtons == 0 && vexCompetitionState == competitionState){
+		wait1Msec(5);
+	}
+}
+
+void waitForRelease(){
+	while (nLCDButtons != 0){
+		wait1Msec(5);
+	}
+}

@@ -22,14 +22,18 @@
 #pragma userControlDuration(120)
 
 #include "Vex_Competition_Includes.c"   //Main competition background code...do not modify!
-#include "autons.c"
 
 #define vexCompetitionState (nVexRCReceiveState & (vrDisabled | vrAutonomousMode))
+#define LEFTBUTTON 1
+#define CENTERBUTTON 2
+#define RIGHTBUTTON 4
 
 TVexReceiverState competitionState;
 int currentConeCount = 0;
 int autonChoice = 0;
 bool left = true;
+
+#include "autons.c"
 
 int filter(int input){
 	if (input > 20 || input < -20){
@@ -208,7 +212,7 @@ task coneCounter(){
 
 void pre_auton(){
 	bLCDBacklight = true;
-	displayLCDCenteredString("Initializing gyro...")
+	displayLCDCenteredString(0, "Initializing gyro...");
 	SensorType[gyro] = sensorNone;
 	wait1Msec(2000);
 	SensorType[gyro] = sensorGyro;
