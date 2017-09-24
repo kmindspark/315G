@@ -6,6 +6,10 @@ int positions[14]={100, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000, 
 void turnLeft(int power, int degrees, bool reverse);
 void turnRight(int power, int degrees, bool reverse);
 
+int encoderAverage(int one, int two){
+	return (abs(one) + abs(two))/2;
+}
+
 void closeClaw()
 {
 	motor[claw] = 127;
@@ -31,6 +35,26 @@ void assignDriveMotors(int lp, int rp){
 	motor[db] = lp;
 	motor[pf] = rp;
 	motor[pb] = rp;
+}
+
+void forwardDistance(int power, int distance){
+	assignDriveMotors(power, power);
+	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance){
+		//keep going
+	}
+	assignDriveMotors(-10, -10);
+	wait1Msec(100);
+	assignDriveMotors(0, 0);
+}
+
+void backwardDistance(int power, int distance){
+	assignDriveMotors(-power, -power);
+	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance){
+		//keep going
+	}
+	assignDriveMotors(10, 10);
+	wait1Msec(100);
+	assignDriveMotors(0, 0);
 }
 
 void forward(int power, int time){
