@@ -27,6 +27,12 @@
 #define LEFTBUTTON 1
 #define CENTERBUTTON 2
 #define RIGHTBUTTON 4
+#define SLEWCONST 1
+
+int goalDrivePowerL = 0;
+int goalDrivePowerR = 0;
+int currentDrivePowerL = 0;
+int currentDrivePowerR = 0;
 
 TVexReceiverState competitionState;
 int currentConeCount = 0;
@@ -44,15 +50,54 @@ int filter(int input){
 	}
 }
 
-task drive(){
+task slew{
+	int previousGoalPowerL = 0;
+	int previousGoalPowerR = 0;
+	int currentChangeL = 0;
+	int currentChangeR = 0;
+	int count = 0;
 	while (true){
-		int forward = filter(vexRT[Ch3] + vexRT[Ch3Xmtr2]/1.5);
-		int turn = filter(vexRT[Ch1] + vexRT[Ch1Xmtr2]/1.5);
+		if (previousGoalPowerL != goalDrivePowerL || previousGoalPowerR != goalDrivePowerR){
+			previousGoalPowerL = goalDrivePowerL;
+			previousGoalPowerR = goalDrivePowerR;
+			currentChangeL = goalDrivePowerL - currentDrivePowerL;
+			currentChangeR = goalDrivePowerR - currentDrivePowerR;
+			count = 0;
+		}
+		if (count <= 5){
+			count = count + 1;
+			currentDrivePowerL = currentDrivePowerL + currentChangeL*SLEWCONST;
+			currentDrivePowerR = currentDrivePowerR + currentChangeR*SLEWCONST;
+		}
+		else{
+			currentDrivePowerL = goalDrivePowerL;
+			currentDrivePowerR = goalDrivePowerR;
+		}
+		wait1Msec(20);
+	}
+}
 
-		motor[df] = forward + turn;
-		motor[db] = forward + turn;
-		motor[pf] = forward - turn;
-		motor[pb] = forward - turn;
+task drive(){
+	startTask(slew);
+	int forward;
+	int turn;
+	int motor1;
+	int motor2;
+	int motor3;
+	int motor4;
+	while (true){
+		forward = filter(vexRT[Ch3]);
+		turn = filter(vexRT[Ch1]);
+		goalDrivePowerL = forward + turn;
+		goalDrivePowerR = -forward + turn;
+		motor1 = currentDrivePowerL;
+		motor2 = currentDrivePowerL;
+		motor3 = currentDrivePowerR;
+		motor4 = currentDrivePowerR;
+		motor[df] = motor1;
+		motor[db] = motor2;
+		motor[pf] = motor3;
+		motor[pb] = motor4;
 	}
 }
 
@@ -288,6 +333,7 @@ task autonomous()
 		switch (autonChoice){
 			case 1: autonomousConeIn20Pt(true, false); break;
 			case 2: autonomousConeIn20Pt(true, true); break;
+			default: break;
 		}
 	}
 }
