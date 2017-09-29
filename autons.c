@@ -34,12 +34,9 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime)
 	wait1Msec(600);
 	assignArmMotors(10);
 	backward(127,1150);
-	turnRight(127,600,reverse);
-	backward(80,700);
-	forward(127,400);
-	turnRight(127, 530,reverse);
+	turnRight(127,135,reverse);
 	forward(127, 800);
-	turnRight(127, 450, reverse);
+	turnRight(127, 90, reverse);
 	forward(127, 700);
 	assignMogoMotors(-127);
 	forward(127, 600);
