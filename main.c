@@ -27,7 +27,7 @@
 #define LEFTBUTTON 1
 #define CENTERBUTTON 2
 #define RIGHTBUTTON 4
-#define SLEWCONST 1
+#define SLEWCONST 0.2
 
 int goalDrivePowerL = 0;
 int goalDrivePowerR = 0;
@@ -89,7 +89,7 @@ task drive(){
 		forward = filter(vexRT[Ch3]);
 		turn = filter(vexRT[Ch1]);
 		goalDrivePowerL = forward + turn;
-		goalDrivePowerR = -forward + turn;
+		goalDrivePowerR = forward - turn;
 		motor1 = currentDrivePowerL;
 		motor2 = currentDrivePowerL;
 		motor3 = currentDrivePowerR;
@@ -117,7 +117,7 @@ task arm(){
 			{
 
 			}
-			assignArmMotors(0);
+			assignArmMotors(-8);
         }
         if(vexRT[Btn7L] == 1){
             autoStack(currentConeCount);
@@ -256,6 +256,7 @@ task coneCounter(){
 }
 
 void pre_auton(){
+	/*
 	bLCDBacklight = true;
 	displayLCDCenteredString(0, "Initializing gyro...");
 	SensorType[gyro] = sensorNone;
@@ -318,7 +319,7 @@ void pre_auton(){
 		displayLCDCenteredString(0, "right");
 	}
 	displayLCDCenteredString(1, autons[autonChoice]);
-
+*/
 }
 
 task autonomous()
