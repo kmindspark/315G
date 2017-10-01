@@ -81,11 +81,11 @@ task claw{
 }
 
 void assignArmMotor(int power){
-	motor[port6] = power;
+	motor[port7] = power;
 }
 
 void assignClawMotor(int power){
-	motor[port7] = power;
+	motor[port6] = power;
 }
 
 void assignDriveMotors(int leftPower, int rightPower){
