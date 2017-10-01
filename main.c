@@ -117,7 +117,7 @@ task arm(){
 			{
 
 			}
-			assignArmMotors(-8);
+			assignArmMotors(-15);
         }
         if(vexRT[Btn7L] == 1){
             autoStack(currentConeCount);
@@ -208,7 +208,7 @@ task clawtask {
 			while (vexRT[Btn7D] == 1){
 				motor[claw] = -75;
 			}
-			motor[claw] = 0;
+			motor[claw] = -10;
 		}
 	}
 }
