@@ -86,8 +86,8 @@ task drive(){
 	int motor3;
 	int motor4;
 	while (true){
-		forward = filter(vexRT[Ch3] + vexRT[Ch3Xmtr2]);
-		turn = filter(vexRT[Ch1] + vexRT[Ch1Xmtr2]);
+		forward = filter(vexRT[Ch3] + vexRT[Ch3Xmtr2]/2);
+		turn = filter(vexRT[Ch1] + vexRT[Ch1Xmtr2]/2);
 		goalDrivePowerL = forward + turn;
 		goalDrivePowerR = forward - turn;
 		motor1 = currentDrivePowerL;
@@ -185,13 +185,25 @@ task flipfloptask {
 		if (vexRT[Btn5D] || vexRT[Btn5DXmtr2]){
 			motor[flipflop] = -127;
 			while (vexRT[Btn5D] || vexRT[Btn5DXmtr2]){
+
 			}
 			if (SensorValue[potFlipFlop] < FLIPFLOPDOWN + 1000){
 				motor[flipflop] = 10;
 			} else {
 				motor[flipflop] = 0;
 			}
-			motor[flipflop] = 10;
+		}
+
+		if (vexRT[Btn7R] || vexRT[Btn7RXmtr2]){
+			motor[flipflop] = -127;
+			while (SensorValue[potFlipFlop] <= FLIPFLOPDOWN){
+				
+			}
+			if (SensorValue[potFlipFlop] < FLIPFLOPDOWN + 1000){
+				motor[flipflop] = 10;
+			} else {
+				motor[flipflop] = 0;
+			}
 		}
 	}
 }
