@@ -1,4 +1,4 @@
-#define FLIPFLOPDOWN 1370
+#define FLIPFLOPDOWN 1900
 #define FLIPFLOPUP 3750
 
 int positions[14]={100, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600};
@@ -83,11 +83,12 @@ void turnRight(int power, int degrees, bool reverse)
 	}
 	SensorValue[gyro] = 0;
 	assignDriveMotors(power,-power);
+	degrees = degrees * 10;
 	while (abs(SensorValue[gyro]) < degrees){
 		//do nothing
 	}
-	assignDriveMotors(-10,10);
-	wait1Msec(100);
+	assignDriveMotors(-20,20);
+	wait1Msec(150);
 	assignDriveMotors(0,0);
 }
 
@@ -100,11 +101,12 @@ void turnLeft(int power, int degrees, bool reverse)
 	}
 	SensorValue[gyro] = 0;
 	assignDriveMotors(-power,power);
+	degrees = degrees*10;
 	while (abs(SensorValue[gyro]) < degrees){
 		//do nothing
 	}
-	assignDriveMotors(10,-10);
-	wait1Msec(100);
+	assignDriveMotors(20,-20);
+	wait1Msec(150);
 	assignDriveMotors(0,0);
 }
 

@@ -109,7 +109,7 @@ task arm(){
 			{
 
 			}
-			assignArmMotors(8);
+			assignArmMotors(0);
 		}
 		if(vexRT[Btn6D] == 1 || vexRT[Btn6DXmtr2] == 1){
 			assignArmMotors(-127);
@@ -117,7 +117,7 @@ task arm(){
 			{
 
 			}
-			assignArmMotors(-15);
+			assignArmMotors(-12);
         }
         if(vexRT[Btn7L] == 1){
             autoStack(currentConeCount);
@@ -196,8 +196,8 @@ task flipfloptask {
 
 		if (vexRT[Btn7R] || vexRT[Btn7RXmtr2]){
 			motor[flipflop] = -127;
-			while (SensorValue[potFlipFlop] <= FLIPFLOPDOWN){
-				
+			while (SensorValue[potFlipFlop] > FLIPFLOPDOWN){
+
 			}
 			if (SensorValue[potFlipFlop] < FLIPFLOPDOWN + 1000){
 				motor[flipflop] = 10;
@@ -212,13 +212,13 @@ task clawtask {
 	while (true) {
 		if (vexRT[Btn7U] == 1){
 			while (vexRT[Btn7U] == 1){
-				motor[claw] = 75;
+				motor[claw] = 127;
 			}
-			motor[claw] = 29;
+			motor[claw] = 35;
 		}
 		if (vexRT[Btn7D] == 1){
 			while (vexRT[Btn7D] == 1){
-				motor[claw] = -75;
+				motor[claw] = -127;
 			}
 			motor[claw] = -10;
 		}
@@ -252,7 +252,6 @@ task coneCounter(){
 }
 
 void pre_auton(){
-	/*
 	bLCDBacklight = true;
 	displayLCDCenteredString(0, "Initializing gyro...");
 	SensorType[gyro] = sensorNone;
@@ -315,21 +314,24 @@ void pre_auton(){
 		displayLCDCenteredString(0, "right");
 	}
 	displayLCDCenteredString(1, autons[autonChoice]);
-*/
 }
 
 task autonomous()
 {
 	if (left) {
 		switch (autonChoice){
-			case 1: autonomousConeIn20Pt(false, false); break;
-			case 2: autonomousConeIn20Pt(false, true); break;
+			case 1: autonomousConeIn20Pt(false, false, false); break;
+			case 2: autonomousConeIn20Pt(false, false, true); break;
+			case 3: autonomousConeIn20Pt(false, true, false); break;
+			case 4: autonDefense(); break;
 			default: break;
 		}
 	} else {
 		switch (autonChoice){
-			case 1: autonomousConeIn20Pt(true, false); break;
-			case 2: autonomousConeIn20Pt(true, true); break;
+			case 1: autonomousConeIn20Pt(true, false, false); break;
+			case 2: autonomousConeIn20Pt(true, false, true); break;
+			case 3: autonomousConeIn20Pt(true, true, false); break;
+			case 4: autonDefense(); break;
 			default: break;
 		}
 	}
