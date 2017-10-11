@@ -16,7 +16,7 @@
 #include "Vex_Competition_Includes.c"   //Main competition background code...do not modify!
 
 #define DRIVESPEED 0.5 //ranges between 0 to 1
-#define ARCADE true //controls whether the drive is tank style (0) or arcade style (1)
+#define ARCADE true //controls whether the drive is tank style (false) or arcade style (true)
 
 int filter (int input){
 	if (input > 20){
