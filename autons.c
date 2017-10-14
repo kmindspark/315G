@@ -1,7 +1,7 @@
 
 #include "helperfunctions.c"
 
-string autons[5] = {"No Auton", "20 Pt Cone", "5 Pt Cone", "1 Cone", "i am a defense bot"};
+string autons[5] = {"No Auton", "20 Pt Cone", "5 Pt Cone", "1 Cone", "iMaDeFeNsEbOt"};
 
 void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept)
 {
@@ -32,7 +32,7 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept)
 	wait1Msec(300);
 	assignArmMotors(10);
 	//backward(127,1150);
-	backward(127,950);
+	backward(127,1050);
 	turnRight(127,90,reverse);
 	backward(127,800);
 	if (fivept)
@@ -44,9 +44,10 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept)
 		backward(127,500);
 		return;
 }
-	turnRight(127,45,reverse);
+	forward(127, 200);
+	turnRight(127,50,reverse);
 	forward(127, 1200);
-	turnRight(127, 90, reverse);
+	turnRight(127, 85, reverse);
 	forward(100, 700);
 	assignMogoMotors(-127);
 	//
@@ -60,5 +61,6 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept)
 }
 
 void autonDefense(){
-	backward(127, 4000);
+	closeClaw();
+	backward(127, 3000);
 }

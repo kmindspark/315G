@@ -87,8 +87,8 @@ void turnRight(int power, int degrees, bool reverse)
 	while (abs(SensorValue[gyro]) < degrees){
 		//do nothing
 	}
-	assignDriveMotors(-20,20);
-	wait1Msec(150);
+	assignDriveMotors(-35,35);
+	wait1Msec(180);
 	assignDriveMotors(0,0);
 }
 
@@ -105,8 +105,8 @@ void turnLeft(int power, int degrees, bool reverse)
 	while (abs(SensorValue[gyro]) < degrees){
 		//do nothing
 	}
-	assignDriveMotors(20,-20);
-	wait1Msec(150);
+	assignDriveMotors(35,-35);
+	wait1Msec(180);
 	assignDriveMotors(0,0);
 }
 
