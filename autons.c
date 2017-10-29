@@ -13,10 +13,7 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept)
 	assignMogoMotors(-127);
 	forward(127,400);
 	assignArmMotors(10);
-	forward(127,400);
-	wait1Msec(400);
-	assignMogoMotors(0);
-	forward(127, 650);
+	forward(127,1000);
 	assignMogoMotors(127);
 	wait1Msec(1300);
 	assignMogoMotors(0);
@@ -28,29 +25,31 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept)
 	if (stopAfterTime){
 		return;
 	}
-	assignArmMotors(127);
-	wait1Msec(300);
-	assignArmMotors(10);
 	//backward(127,1150);
-	backward(127,1050);
+	backward(127,1250);
 	turnRight(127,90,reverse);
 	backward(127,800);
 	if (fivept)
 	{
 		turnRight(127,90,reverse);
+		assignArmMotors(127);
+		wait1Msec(300);
+		assignArmMotors(10);
 		assignMogoMotors(-127);
 		wait1Msec(1000);
 		assignMogoMotors(0);
 		backward(127,500);
 		return;
 }
-	forward(127, 200);
-	turnRight(127,50,reverse);
-	forward(127, 1200);
-	turnRight(127, 85, reverse);
+	forward(127, 400);
+	turnRight(127,60,reverse);
+	forward(127, 880);
+	turnRight(127, 75, reverse);
 	forward(100, 700);
+	assignArmMotors(127);
+	wait1Msec(300);
+	assignArmMotors(10);
 	assignMogoMotors(-127);
-	//
 	forward(60, 700);
 	wait1Msec(500);
 	assignMogoMotors(0);
@@ -62,5 +61,5 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept)
 
 void autonDefense(){
 	closeClaw();
-	backward(127, 3000);
+	backward(127, 4000);
 }

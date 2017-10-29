@@ -86,8 +86,14 @@ task drive(){
 	int motor3;
 	int motor4;
 	while (true){
-		forward = filter(vexRT[Ch3] + vexRT[Ch3Xmtr2]/2);
-		turn = filter(vexRT[Ch1] + vexRT[Ch1Xmtr2]/2);
+		if (abs(filter(vexRT[Ch3])) > 0 || abs(filter(vexRT[Ch1])) > 0){
+			forward = filter(vexRT[Ch3]);
+			turn = filter(vexRT[Ch1]);
+		}
+		else{
+			forward = filter(vexRT[Ch3] + vexRT[Ch3Xmtr2]/2);
+			turn = filter(vexRT[Ch1] + vexRT[Ch1Xmtr2]/2);
+		}
 		goalDrivePowerL = forward + turn;
 		goalDrivePowerR = forward - turn;
 		motor1 = currentDrivePowerL;
@@ -109,7 +115,7 @@ task arm(){
 			{
 
 			}
-			assignArmMotors(0);
+			assignArmMotors(5);
 		}
 		if(vexRT[Btn6D] == 1 || vexRT[Btn6DXmtr2] == 1){
 			assignArmMotors(-127);
@@ -118,11 +124,7 @@ task arm(){
 
 			}
 			assignArmMotors(-12);
-        }
-        if(vexRT[Btn7L] == 1){
-            autoStack(currentConeCount);
-            currentConeCount++;
-        }
+    }
 	}
 }
 
@@ -264,6 +266,9 @@ void pre_auton(){
 	bool chosen = false;
 	displayLCDCenteredString(0, autons[autonChoice]);
 	clearTimer(T1);
+	if (nLCDButtons != LEFTBUTTON){
+		return;
+	}
 	while (!chosen && vexCompetitionState == competitionState){
 		waitForPress();
 		if (nLCDButtons == RIGHTBUTTON){
