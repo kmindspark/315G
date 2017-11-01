@@ -1,5 +1,9 @@
 #define FLIPFLOPDOWN 1900
 #define FLIPFLOPUP 3750
+#define BOTTOMARMPOS 200
+#define LOADERARMPOS 700
+
+int currentDownPos=BOTTOMARMPOS;
 
 int positions[14]={100, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600};
 
@@ -119,14 +123,12 @@ void autoStack(int numCones){
 	closeClaw();
 	assignFlipFlop(127);
 	wait1Msec(200);
+	assignFlipFlop(0);
 	assignArmMotors(127);
 	int goalPos = positions[numCones-1];
 	while(SensorValue[potArm] < goalPos){
-		if (SensorValue[potArm] < positions[0] + 400  || SensorValue[potArm] > goalPos - 400){
+		if (SensorValue[potArm] > goalPos - 200){
 			assignFlipFlop(127);
-		}
-		else if (SensorValue[potArm] < goalPos){
-			assignFlipFlop(0);
 		}
 	}
 	assignFlipFlop(127);
@@ -139,20 +141,18 @@ void autoStack(int numCones){
 	openClaw();
 	assignArmMotors(127);
 	assignFlipFlop(-127);
-	wait1Msec(400);
+	wait1Msec(200);
 	assignArmMotors(-127);
-	while (SensorValue[potArm] > positions[0]){
-		if (SensorValue[potFlipFlop] < FLIPFLOPDOWN){
-			assignFlipFlop(10);
-		}
+	while (SensorValue[potArm] > currentDownPos){
+		//wait
 	}
 	if (SensorValue[potFlipFlop] >= FLIPFLOPDOWN){
 		assignFlipFlop(-127);
 		while (SensorValue[potFlipFlop] >= FLIPFLOPDOWN){
 			//wait
 		}
-		assignFlipFlop(10);
 	}
+	assignFlipFlop(-5);
 }
 
 void assignMogoMotors(int power){

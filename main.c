@@ -124,7 +124,18 @@ task arm(){
 
 			}
 			assignArmMotors(-12);
-    }
+		}
+		if (vexRT[Btn7R] == 1){
+			autoStack(currentConeCount);
+		}
+		if (vexRT[Btn7L] == 1){
+			if (currentDownPos == BOTTOMARMPOS){
+				currentDownPos = LOADERARMPOS;
+			}
+			if (currentDownPos == LOADERARMPOS){
+				currentDownPos = BOTTOMARMPOS;
+			}
+		}
 	}
 }
 
@@ -139,24 +150,11 @@ task mogo(){
 			assignMogoMotors(0);
 		}
 		if(vexRT[Btn8D]){
-			assignMogoMotors(-127);
+			assignMogoMotors(-100);
 			while(vexRT[Btn8D] == 1)
 			{
 
 			}
-			assignMogoMotors(0);
-		}
-		if (vexRT[Btn8R]){
-			assignMogoMotors(-127);
-			wait1Msec(600);
-			assignMogoMotors(-70);
-			wait1Msec(800);
-			assignMogoMotors(-10);
-			wait1Msec(400);
-			assignMogoMotors(10);
-			wait1Msec(300);
-			assignMogoMotors(40);
-			wait1Msec(300);
 			assignMogoMotors(0);
 		}
 	}
@@ -189,11 +187,7 @@ task flipfloptask {
 			while (vexRT[Btn5D] || vexRT[Btn5DXmtr2]){
 
 			}
-			if (SensorValue[potFlipFlop] < FLIPFLOPDOWN + 1000){
-				motor[flipflop] = 10;
-			} else {
-				motor[flipflop] = 0;
-			}
+			motor[flipflop] = -5;
 		}
 
 		if (vexRT[Btn7R] || vexRT[Btn7RXmtr2]){
@@ -201,11 +195,7 @@ task flipfloptask {
 			while (SensorValue[potFlipFlop] > FLIPFLOPDOWN){
 
 			}
-			if (SensorValue[potFlipFlop] < FLIPFLOPDOWN + 1000){
-				motor[flipflop] = 10;
-			} else {
-				motor[flipflop] = 0;
-			}
+			motor[flipflop] = -5;
 		}
 	}
 }
@@ -229,18 +219,6 @@ task clawtask {
 
 task coneCounter(){
 	while (true){
-		if (vexRT[Btn7DXmtr2]){
-			currentConeCount = 3;
-		}
-		if (vexRT[Btn7LXmtr2]){
-			currentConeCount = 6;
-		}
-		if (vexRT[Btn7UXmtr2]){
-			currentConeCount = 9;
-		}
-		if (vexRT[Btn7RXmtr2]){
-			currentConeCount = 12;
-		}
 		if (vexRT[Btn8DXmtr2]){
 			currentConeCount = 0;
 		}

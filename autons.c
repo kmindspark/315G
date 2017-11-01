@@ -1,7 +1,7 @@
 
 #include "helperfunctions.c"
 
-string autons[5] = {"No Auton", "20 Pt Cone", "5 Pt Cone", "1 Cone", "iMaDeFeNsEbOt"};
+string autons[5] = {"No Auton", "20 Pt Cone", "5 Pt Cone", "1 Cone", "iM a DeFeNsE bOt"};
 
 void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept)
 {
