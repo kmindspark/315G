@@ -172,15 +172,7 @@ task flipfloptask {
 			motor[flipflop] = 0;
 			if (SensorValue[potFlipFlop] < FLIPFLOPDOWN + 1000){
 				motor[flipflop] = 10;
-			} /*else {
-				motor[flipflop] = -20;
-				wait1Msec(300);
-				if (SensorValue[potFlipFlop] > FLIPFLOPUP - 250){
-					motor[flipflop] = -10;
-				} else {
-					motor[flipflop] = 0;
-				}
-			}*/
+			}
 		}
 		if (vexRT[Btn5D] || vexRT[Btn5DXmtr2]){
 			motor[flipflop] = -127;
