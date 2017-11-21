@@ -41,6 +41,8 @@ bool left = true;
 bool brakeWheels = false;
 int goalDriveValue;
 
+bool skills = false;
+
 #include "autons.c"
 
 int filter(int input){
