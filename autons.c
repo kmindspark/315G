@@ -1,7 +1,7 @@
 
 #include "helperfunctions.c"
 
-string autons[7] = {"No Auton", "1 Cone", "5 Pt Cone", "10 Pt Cone", "20 Pt Cone", "20 Pt 2 Cones", "Stationary", "iM a DeFeNsE bOt"};
+string autons[8] = {"No Auton", "1 Cone", "5 Pt Cone", "10 Pt Cone", "20 Pt Cone", "20 Pt 2 Cones", "Stationary", "iM a DeFeNsE bOt"};
 
 void autonomousStationary(){
 	motor[claw] = 20;
