@@ -127,22 +127,25 @@ task drive(){
 task arm(){
 	while(true){
 		if(vexRT[Btn6U] == 1){
+			stopTask(maintainArmPos);
 			assignArmMotors(127);
 			while(vexRT[Btn6U] == 1)
 			{
 
 			}
-			assignArmMotors(5);
+			startTask(maintainArmPos);
 		}
 		if(vexRT[Btn6D] == 1){
+			stopTask(maintainArmPos);
 			assignArmMotors(-127);
 			while(vexRT[Btn6D] == 1)
 			{
 
 			}
-			assignArmMotors(-10);
+			assignArmMotors(0);
 		}
 		if (vexRT[Btn7R] == 1){
+			stopTask(maintainArmPos);
 			numCones++;
 			clearTimer(t3);
 			autoStackCones();

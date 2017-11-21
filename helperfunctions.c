@@ -4,6 +4,7 @@
 #define LOADERARMPOS 700
 #define STATIONARYARMPOS 1250
 #define KP_WHEELS 0.2 //TODO: experiment with scaling power polynomially (perhaps quadratically) instead of linearly when braking
+#define KP_ARM 0.2
 
 int currentDownPos=BOTTOMARMPOS;
 bool autoStackingInProgress;
@@ -158,6 +159,16 @@ void turnLeft(int power, int degrees, bool reverse)
 void assignFlipFlop(int power)
 {
 	motor[flipflop] = power;
+}
+
+task maintainArmPos(){
+	int goalPos = SensorValue[potArm];
+	int diff;
+	while (true){
+		diff = goalPos - SensorValue[potArm];
+		assignArmMotors(diff*KP_ARM+5);
+		wait1Msec(10);
+	}
 }
 
 void autoStackCones(){
