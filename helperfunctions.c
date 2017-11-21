@@ -3,9 +3,10 @@
 #define BOTTOMARMPOS 0
 #define LOADERARMPOS 700
 #define STATIONARYARMPOS 1250
-#define KP_WHEELS 0.2
+#define KP_WHEELS 0.2 //TODO: experiment with scaling power polynomially (perhaps quadratically) instead of linearly when braking
 
 int currentDownPos=BOTTOMARMPOS;
+bool autoStackingInProgress;
 
 int positions[13]={120, 260, 470, 540, 700, 890, 1010, 1140, 1270, 1400, 1530, 1660, 1760};
 
@@ -159,7 +160,16 @@ void assignFlipFlop(int power)
 	motor[flipflop] = power;
 }
 
-void autoStack(int numCones){
+void autoStackCones(){
+	startTask(autoStack);
+	while (time1[t3] < 4000 && autoStackingInProgress){
+
+	}
+	stopTask(autoStack);
+}
+
+task autoStack(){
+	autoStackingInProgress = true;
 	closeClaw();
 	assignFlipFlop(127);
 	wait1Msec(200);
@@ -195,7 +205,8 @@ void autoStack(int numCones){
 			//wait
 		}
 	}
-	assignFlipFlop(-5);
+
+	autoStackingInProgress = false;
 }
 
 void assignMogoMotors(int power){

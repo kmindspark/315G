@@ -35,7 +35,7 @@ int currentDrivePowerL = 0;
 int currentDrivePowerR = 0;
 
 TVexReceiverState competitionState;
-int currentConeCount = 0;
+int numCones = 0;
 int autonChoice = 0;
 bool left = true;
 bool brakeWheels = false;
@@ -143,8 +143,9 @@ task arm(){
 			assignArmMotors(-10);
 		}
 		if (vexRT[Btn7R] == 1){
-			currentConeCount++;
-			autoStack(currentConeCount);
+			numCones++;
+			clearTimer(t3);
+			autoStackCones();
 		}
 		if (vexRT[Btn7L] == 1){
 			if (currentDownPos == BOTTOMARMPOS){
@@ -169,7 +170,7 @@ task mogo(){
 			assignMogoMotors(5);
 		}
 		if(vexRT[Btn8D]){
-			assignMogoMotors(-100);
+			assignMogoMotors(-127);
 			while(vexRT[Btn8D] == 1)
 			{
 
@@ -217,13 +218,13 @@ task clawtask {
 task coneCounter(){
 	while (true){
 		if (vexRT[Btn8DXmtr2]){
-			currentConeCount = 0;
+			numCones = 0;
 		}
 		if (vexRT[Btn8LXmtr2]){
-			currentConeCount--;
+			numCones--;
 		}
 		if (vexRT[Btn8RXmtr2]){
-			currentConeCount++;
+			numCones++;
 		}
 	}
 }

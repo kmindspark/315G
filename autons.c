@@ -27,9 +27,7 @@ void autonomousStationary(){
 void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool tenpt, bool extraCones)
 {
 	clearTimer(T1);
-	motor[claw] = 20;
-	//turnRight(127,250,reverse);
-	//turnLeft(127,250,reverse);
+	motor[claw] = 20; //Drive forward to pick up mobile goal and score the cone on it
 	assignArmMotors(60);
 	assignMogoMotors(-127);
 	forward(127,600);
@@ -42,21 +40,21 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 	wait1Msec(200);
 	assignArmMotors(0);
 	wait1Msec(200);
-	openClaw();
+	openClaw(); //At this point the one cone is scored
+
 	if (stopAfterTime){
 		return;
 	}
 
 	if (extraCones){
-
+		//TODO: fill in with new autonomous subroutine
 	}
 
-	//backward(127,1150);
 	backward(127,1850);
 	turnRight(127,90,reverse);
 	backwardTime(127,500);
-	backwardTime(80,400);
-	if (fivept)
+	backwardTime(80,400); //Drive backwards into the wall to align
+	if (fivept) //Code to run for 5 pt auton
 	{
 		turnRight(127,90,reverse);
 		if (tenpt){
@@ -69,9 +67,9 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 		wait1Msec(1000);
 		assignMogoMotors(0);
 		backward(127,1000);
-		return;
+		return; //Exit from autonomous since 5 point auton is complete
 	}
-	forward(127, 200);
+	forward(127, 200); //Navigate to the 20 point zone
 	turnRight(127,60,reverse);
 	forward(127, 1000);//880
 	turnRight(127, 75, reverse);
@@ -79,14 +77,12 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 	assignArmMotors(127);
 	wait1Msec(300);
 	assignArmMotors(10);
-	assignMogoMotors(-127);
+	assignMogoMotors(-127); //Begin deposit sequence
 	forwardTime(100, 900);
 	wait1Msec(500);
 	assignMogoMotors(0);
 	backwardTime(127, 300);
 	assignMogoMotors(127);
-	/*forwardTime(127, 300);
-	wait1Msec(200);*/
 	backwardTime(127,700);
 	assignMogoMotors(0);
 	displayLCDNumber(1, 1, time1[T1]);
