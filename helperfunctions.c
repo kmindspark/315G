@@ -3,6 +3,7 @@
 #define BOTTOMARMPOS 0
 #define LOADERARMPOS 700
 #define STATIONARYARMPOS 1250
+#define KP_WHEELS 0.2
 
 int currentDownPos=BOTTOMARMPOS;
 
@@ -43,25 +44,39 @@ void assignDriveMotors(int lp, int rp){
 }
 
 void forwardDistance(int power, int distance){
+	clearTimer(t2);
 	SensorValue[leftEncoder] = 0;
 	SensorValue[rightEncoder] = 0;
 	assignDriveMotors(power, power);
-	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance){
+	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 100 && time1[t2] < distance + 2000){
 		//keep going
 	}
-	assignDriveMotors(-20, -20);
+	goalDriveValue = distance + 30;
+	startTask(brakeWheels);
+	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance && time1[t2] < distance + 2000){
+		//keep going
+	}
+	stopTask(brakeWheels)
+	assignDriveMotors(-40, -40);
 	wait1Msec(100);
 	assignDriveMotors(0, 0);
 }
 
 void backwardDistance(int power, int distance){
+	clearTimer(t2);
 	SensorValue[leftEncoder] = 0;
 	SensorValue[rightEncoder] = 0;
 	assignDriveMotors(-power, -power);
-	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance){
+	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 100 && time1[t2] < distance + 2000){
 		//keep going
 	}
-	assignDriveMotors(20, 20);
+	goalDriveValue = -(distance + 30);
+	startTask(brakeWheels);
+	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance && time1[t2] < distance + 2000){
+		//keep going
+	}
+	stopTask(brakeWheels)
+	assignDriveMotors(40, 40);
 	wait1Msec(100);
 	assignDriveMotors(0, 0);
 }
@@ -197,5 +212,15 @@ void waitForPress(){
 void waitForRelease(){
 	while (nLCDButtons != 0){
 		wait1Msec(5);
+	}
+}
+
+task brakeWheels(){
+	int currentValue;
+	int motorPower;
+	while (true){
+		currentValue = (-SensorValue[leftEncoder] + SensorValue[rightEncoder])/2; //TODO: check if signing is correct
+		motorPower = (goalValue - currentValue)*KP_WHEELS;
+		assignDriveMotors(motorPower, motorPower);
 	}
 }

@@ -1,7 +1,7 @@
 
 #include "helperfunctions.c"
 
-string autons[7] = {"No Auton", "20 Pt Cone", "5 Pt Cone", "1 Cone", "10 Pt Cone", "Stationary", "iM a DeFeNsE bOt"};
+string autons[7] = {"No Auton", "1 Cone", "5 Pt Cone", "10 Pt Cone", "20 Pt Cone", "20 Pt 2 Cones", "Stationary", "iM a DeFeNsE bOt"};
 
 void autonomousStationary(){
 	motor[claw] = 20;
@@ -24,7 +24,7 @@ void autonomousStationary(){
 	motor[claw] = 0;
 }
 
-void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool tenpt)
+void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool tenpt, bool extraCones)
 {
 	clearTimer(T1);
 	motor[claw] = 20;
@@ -46,6 +46,11 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 	if (stopAfterTime){
 		return;
 	}
+
+	if (extraCones){
+
+	}
+
 	//backward(127,1150);
 	backward(127,1850);
 	turnRight(127,90,reverse);
@@ -65,7 +70,7 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 		assignMogoMotors(0);
 		backward(127,1000);
 		return;
-}
+	}
 	forward(127, 200);
 	turnRight(127,60,reverse);
 	forward(127, 1000);//880

@@ -38,11 +38,13 @@ TVexReceiverState competitionState;
 int currentConeCount = 0;
 int autonChoice = 0;
 bool left = true;
+bool brakeWheels = false;
+int goalDriveValue;
 
 #include "autons.c"
 
 int filter(int input){
-	if (input > 20 || input < -20){
+	if (abs(input) > 20){
 		return input;
 	}
 	else {
@@ -87,6 +89,7 @@ task drive(){
 	int motor4;
 	while (true){
 		if (abs(filter(vexRT[Ch3])) > 0 || abs(filter(vexRT[Ch1])) > 0){
+			brakeWheels = false;
 			forward = filter(vexRT[Ch3]);
 			turn = filter(vexRT[Ch1]);
 		}
@@ -94,6 +97,7 @@ task drive(){
 			forward = filter(vexRT[Ch3] + vexRT[Ch3Xmtr2]/2);
 			turn = filter(vexRT[Ch1] + vexRT[Ch1Xmtr2]/2);
 		}
+
 		goalDrivePowerL = forward + turn;
 		goalDrivePowerR = forward - turn;
 		motor1 = currentDrivePowerL;
@@ -104,22 +108,35 @@ task drive(){
 		motor[db] = motor2;
 		motor[pf] = motor3;
 		motor[pb] = motor4;
+
+		if (vexRT[Btn8L]){
+			brakeWheels = !brakeWheels;
+			if (brakeWheels){
+				SensorValue[leftEncoder] = 0;
+				SensorValue[rightEncoder] = 0;
+				goalDriveValue = 0;
+				startTask(brakeWheels);
+			} else {
+				stopTask(brakeWheels);
+			}
+			wait1Msec(200);
+		}
 	}
 }
 
 task arm(){
 	while(true){
-		if(vexRT[Btn6U] == 1 || vexRT[Btn6UXmtr2] == 1){
+		if(vexRT[Btn6U] == 1){
 			assignArmMotors(127);
-			while(vexRT[Btn6U] == 1 || vexRT[Btn6UXmtr2] == 1)
+			while(vexRT[Btn6U] == 1)
 			{
 
 			}
 			assignArmMotors(5);
 		}
-		if(vexRT[Btn6D] == 1 || vexRT[Btn6DXmtr2] == 1){
+		if(vexRT[Btn6D] == 1){
 			assignArmMotors(-127);
-			while(vexRT[Btn6D] == 1 || vexRT[Btn6DXmtr2] == 1)
+			while(vexRT[Btn6D] == 1)
 			{
 
 			}
@@ -164,23 +181,15 @@ task mogo(){
 
 task flipfloptask {
 	while (true) {
-		if (vexRT[Btn5U] || vexRT[Btn5UXmtr2]){
+		if (vexRT[Btn5U]){
 			motor[flipflop] = 127;
-			while (vexRT[Btn5U] || vexRT[Btn5UXmtr2]){
+			while (vexRT[Btn5U]){
 			}
 			motor[flipflop] = 0;
 		}
-		if (vexRT[Btn5D] || vexRT[Btn5DXmtr2]){
+		if (vexRT[Btn5D]){
 			motor[flipflop] = -127;
-			while (vexRT[Btn5D] || vexRT[Btn5DXmtr2]){
-
-			}
-			motor[flipflop] = -5;
-		}
-
-		if (vexRT[Btn7R] || vexRT[Btn7RXmtr2]){
-			motor[flipflop] = -127;
-			while (SensorValue[potFlipFlop] > FLIPFLOPDOWN){
+			while (vexRT[Btn5D]){
 
 			}
 			motor[flipflop] = -5;
@@ -291,20 +300,20 @@ task autonomous()
 {
 	if (left) {
 		switch (autonChoice){
-			case 1: autonomousConeIn20Pt(false, false, false, false); break;
-			case 2: autonomousConeIn20Pt(false, false, true, false); break;
-			case 3: autonomousConeIn20Pt(false, true, false, false); break;
-			case 4: autonomousConeIn20Pt(false, false, true, true); break;
+			case 1: autonomousConeIn20Pt(false, true, false, false, false); break;
+			case 2: autonomousConeIn20Pt(false, false, true, false, false); break;
+			case 3: autonomousConeIn20Pt(false, false, true, true, false); break;
+			case 4: autonomousConeIn20Pt(false, false, false, false, true); break;
 			case 5: autonomousStationary(); break;
 			case 6: autonDefense(); break;
 			default: break;
 		}
 	} else {
 		switch (autonChoice){
-			case 1: autonomousConeIn20Pt(true, false, false, false); break;
-			case 2: autonomousConeIn20Pt(true, false, true, false); break;
-			case 3: autonomousConeIn20Pt(true, true, false, false); break;
-			case 4: autonomousConeIn20Pt(true, false, true, true); break;
+			case 1: autonomousConeIn20Pt(true, true, false, false, false); break;
+			case 2: autonomousConeIn20Pt(true, false, true, false, false); break;
+			case 3: autonomousConeIn20Pt(true, false, true, true, false); break;
+			case 4: autonomousConeIn20Pt(true, false, false, false, true); break;
 			case 5: autonomousStationary(); break;
 			case 6: autonDefense(); break;
 			default: break;
