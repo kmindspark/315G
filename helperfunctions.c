@@ -45,39 +45,49 @@ void assignDriveMotors(int lp, int rp){
 	motor[pb] = rp;
 }
 
+task brakeWheels(){
+	int currentValue;
+	int motorPower;
+	while (true){
+		currentValue = (-SensorValue[leftEncoder] + SensorValue[rightEncoder])/2; //TODO: check if signing is correct
+		motorPower = (goalDriveValue - currentValue)*KP_WHEELS;
+		assignDriveMotors(motorPower, motorPower);
+	}
+}
+
 void forwardDistance(int power, int distance){
-	clearTimer(t2);
+	clearTimer(T2);
 	SensorValue[leftEncoder] = 0;
 	SensorValue[rightEncoder] = 0;
 	assignDriveMotors(power, power);
-	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 100 && time1[t2] < distance + 2000){
+	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 100 && time1[T2] < distance + 2000){
 		//keep going
 	}
 	goalDriveValue = distance + 30;
 	startTask(brakeWheels);
-	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance && time1[t2] < distance + 2000){
+	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance && time1[T2] < distance + 2000){
 		//keep going
 	}
-	stopTask(brakeWheels)
+	stopTask(brakeWheels);
 	assignDriveMotors(-40, -40);
 	wait1Msec(100);
 	assignDriveMotors(0, 0);
 }
 
 void backwardDistance(int power, int distance){
-	clearTimer(t2);
+	clearTimer(T2);
 	SensorValue[leftEncoder] = 0;
 	SensorValue[rightEncoder] = 0;
 	assignDriveMotors(-power, -power);
-	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 100 && time1[t2] < distance + 2000){
+	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 100 && time1[T2] < distance + 2000){
 		//keep going
 	}
 	goalDriveValue = -(distance + 30);
 	startTask(brakeWheels);
-	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance && time1[t2] < distance + 2000){
+	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance && time1[T2] < distance + 2000){
 		//keep going
 	}
-	stopTask(brakeWheels)
+	stopTask(brakeWheels);
 	assignDriveMotors(40, 40);
 	wait1Msec(100);
 	assignDriveMotors(0, 0);
@@ -171,15 +181,6 @@ task maintainArmPos(){
 	}
 }
 
-void autoStackCones(){
-	startTask(autoStack);
-	clearTimer(t3);
-	while (time1[t3] < 4000 && autoStackingInProgress){
-
-	}
-	stopTask(autoStack);
-}
-
 task autoStack(){
 	autoStackingInProgress = true;
 	closeClaw();
@@ -220,6 +221,15 @@ task autoStack(){
 	autoStackingInProgress = false;
 }
 
+void autoStackCones(){
+	startTask(autoStack);
+	clearTimer(T3);
+	while (time1[T3] < 4000 && autoStackingInProgress){
+
+	}
+	stopTask(autoStack);
+}
+
 void assignMogoMotors(int power){
 	motor[mogoL] = power;
 	motor[mogoR] = -power;
@@ -234,15 +244,5 @@ void waitForPress(){
 void waitForRelease(){
 	while (nLCDButtons != 0){
 		wait1Msec(5);
-	}
-}
-
-task brakeWheels(){
-	int currentValue;
-	int motorPower;
-	while (true){
-		currentValue = (-SensorValue[leftEncoder] + SensorValue[rightEncoder])/2; //TODO: check if signing is correct
-		motorPower = (goalValue - currentValue)*KP_WHEELS;
-		assignDriveMotors(motorPower, motorPower);
 	}
 }

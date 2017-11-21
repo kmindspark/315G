@@ -38,7 +38,7 @@ TVexReceiverState competitionState;
 int numCones = 0;
 int autonChoice = 0;
 bool left = true;
-bool brakeWheels = false;
+bool brake = false;
 int goalDriveValue;
 
 bool skills = false;
@@ -91,7 +91,7 @@ task drive(){
 	int motor4;
 	while (true){
 		if (abs(filter(vexRT[Ch3])) > 0 || abs(filter(vexRT[Ch1])) > 0){
-			brakeWheels = false;
+			brake = false;
 			forward = filter(vexRT[Ch3]);
 			turn = filter(vexRT[Ch1]);
 		}
@@ -112,8 +112,8 @@ task drive(){
 		motor[pb] = motor4;
 
 		if (vexRT[Btn8L]){
-			brakeWheels = !brakeWheels;
-			if (brakeWheels){
+			brake = !brake;
+			if (brake){
 				SensorValue[leftEncoder] = 0;
 				SensorValue[rightEncoder] = 0;
 				goalDriveValue = 0;
