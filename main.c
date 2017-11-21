@@ -146,9 +146,8 @@ task arm(){
 		}
 		if (vexRT[Btn7R] == 1){
 			stopTask(maintainArmPos);
-			numCones++;
-			clearTimer(t3);
 			autoStackCones();
+			numCones++;
 		}
 		if (vexRT[Btn7L] == 1){
 			if (currentDownPos == BOTTOMARMPOS){

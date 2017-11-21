@@ -173,6 +173,7 @@ task maintainArmPos(){
 
 void autoStackCones(){
 	startTask(autoStack);
+	clearTimer(t3);
 	while (time1[t3] < 4000 && autoStackingInProgress){
 
 	}
@@ -186,7 +187,7 @@ task autoStack(){
 	wait1Msec(200);
 	assignFlipFlop(0);
 	assignArmMotors(127);
-	int goalPos = positions[numCones-1];
+	int goalPos = positions[numCones];
 	while(SensorValue[potArm] < goalPos){
 		if (SensorValue[potArm] > goalPos - 200){
 			assignFlipFlop(127);
@@ -211,12 +212,11 @@ task autoStack(){
 	}
 	assignArmMotors(-10);
 	if (SensorValue[potFlipFlop] >= FLIPFLOPDOWN){
-		assignFlipFlop(-127);
 		while (SensorValue[potFlipFlop] >= FLIPFLOPDOWN){
 			//wait
 		}
 	}
-
+	assignFlipFlop(0);
 	autoStackingInProgress = false;
 }
 
