@@ -1,11 +1,12 @@
-#define FLIPFLOPDOWN 1900
-#define FLIPFLOPUP 3750
-#define BOTTOMARMPOS 200
+#define FLIPFLOPDOWN 1600
+#define FLIPFLOPUP 2850
+#define BOTTOMARMPOS 0
 #define LOADERARMPOS 700
+#define STATIONARYARMPOS 1250
 
 int currentDownPos=BOTTOMARMPOS;
 
-int positions[14]={100, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600};
+int positions[13]={120, 260, 470, 540, 700, 890, 1010, 1140, 1270, 1400, 1530, 1660, 1760};
 
 void turnLeft(int power, int degrees, bool reverse);
 void turnRight(int power, int degrees, bool reverse);
@@ -18,14 +19,14 @@ void closeClaw()
 {
 	motor[claw] = 127;
 	wait1Msec(500);
-	motor[claw] = 30;
+	motor[claw] = 25;
 }
 
 void openClaw()
 {
 	motor[claw] = -127;
 	wait1Msec(500);
-	motor[claw] = 0;
+	motor[claw] = -20;
 }
 
 
@@ -42,26 +43,48 @@ void assignDriveMotors(int lp, int rp){
 }
 
 void forwardDistance(int power, int distance){
+	SensorValue[leftEncoder] = 0;
+	SensorValue[rightEncoder] = 0;
 	assignDriveMotors(power, power);
 	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance){
 		//keep going
 	}
-	assignDriveMotors(-10, -10);
+	assignDriveMotors(-20, -20);
 	wait1Msec(100);
 	assignDriveMotors(0, 0);
 }
 
 void backwardDistance(int power, int distance){
+	SensorValue[leftEncoder] = 0;
+	SensorValue[rightEncoder] = 0;
 	assignDriveMotors(-power, -power);
 	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance){
 		//keep going
 	}
+	assignDriveMotors(20, 20);
+	wait1Msec(100);
+	assignDriveMotors(0, 0);
+}
+
+void forwardTime(int power, int time){
+	assignDriveMotors(power, power);
+	wait1Msec(time);
+	assignDriveMotors(-10, -10);
+	wait1Msec(100);
+	assignDriveMotors(0, 0);
+}
+
+void backwardTime(int power, int time){
+	assignDriveMotors(-power, -power);
+	wait1Msec(time);
 	assignDriveMotors(10, 10);
 	wait1Msec(100);
 	assignDriveMotors(0, 0);
 }
 
 void forward(int power, int time){
+	forwardDistance(power, time*0.65);
+	return;
 	assignDriveMotors(power, power);
 	wait1Msec(time);
 	assignDriveMotors(-10, -10);
@@ -71,6 +94,8 @@ void forward(int power, int time){
 
 void backward(int power, int time)
 {
+	backwardDistance(power, time*0.65);
+	return;
 	assignDriveMotors(-power,-power);
 	wait1Msec(time);
 	assignDriveMotors(10,10);
@@ -91,7 +116,7 @@ void turnRight(int power, int degrees, bool reverse)
 	while (abs(SensorValue[gyro]) < degrees){
 		//do nothing
 	}
-	assignDriveMotors(-35,35);
+	assignDriveMotors(-40,40);
 	wait1Msec(180);
 	assignDriveMotors(0,0);
 }
@@ -109,7 +134,7 @@ void turnLeft(int power, int degrees, bool reverse)
 	while (abs(SensorValue[gyro]) < degrees){
 		//do nothing
 	}
-	assignDriveMotors(35,-35);
+	assignDriveMotors(40,-40);
 	wait1Msec(180);
 	assignDriveMotors(0,0);
 }
@@ -131,21 +156,24 @@ void autoStack(int numCones){
 			assignFlipFlop(127);
 		}
 	}
+	assignArmMotors(10);
 	assignFlipFlop(127);
 	while(SensorValue[potFlipFlop] < FLIPFLOPUP){
 		//wait
 	}
 	assignFlipFlop(0);
-	assignArmMotors(-40);
-	wait1Msec(200);
+	assignArmMotors(-127);
+	wait1Msec(300);
 	openClaw();
 	assignArmMotors(127);
+	wait1Msec(200);
 	assignFlipFlop(-127);
 	wait1Msec(200);
 	assignArmMotors(-127);
 	while (SensorValue[potArm] > currentDownPos){
 		//wait
 	}
+	assignArmMotors(-10);
 	if (SensorValue[potFlipFlop] >= FLIPFLOPDOWN){
 		assignFlipFlop(-127);
 		while (SensorValue[potFlipFlop] >= FLIPFLOPDOWN){

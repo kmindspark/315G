@@ -1,6 +1,6 @@
+#pragma config(Sensor, in2,    potArm,         sensorPotentiometer)
+#pragma config(Sensor, in3,    potFlipFlop,    sensorPotentiometer)
 #pragma config(Sensor, in4,    gyro,           sensorGyro)
-#pragma config(Sensor, in7,    potArm,         sensorPotentiometer)
-#pragma config(Sensor, in8,    potFlipFlop,    sensorPotentiometer)
 #pragma config(Sensor, dgtl1,  leftEncoder,    sensorQuadEncoder)
 #pragma config(Sensor, dgtl3,  rightEncoder,   sensorQuadEncoder)
 #pragma config(Motor,  port1,           mogoL,         tmotorVex393_HBridge, openLoop, reversed)
@@ -123,9 +123,10 @@ task arm(){
 			{
 
 			}
-			assignArmMotors(-12);
+			assignArmMotors(-10);
 		}
 		if (vexRT[Btn7R] == 1){
+			currentConeCount++;
 			autoStack(currentConeCount);
 		}
 		if (vexRT[Btn7L] == 1){
@@ -135,6 +136,7 @@ task arm(){
 			if (currentDownPos == LOADERARMPOS){
 				currentDownPos = BOTTOMARMPOS;
 			}
+			wait1Msec(300);
 		}
 	}
 }
@@ -147,7 +149,7 @@ task mogo(){
 			{
 
 			}
-			assignMogoMotors(0);
+			assignMogoMotors(5);
 		}
 		if(vexRT[Btn8D]){
 			assignMogoMotors(-100);
@@ -165,14 +167,8 @@ task flipfloptask {
 		if (vexRT[Btn5U] || vexRT[Btn5UXmtr2]){
 			motor[flipflop] = 127;
 			while (vexRT[Btn5U] || vexRT[Btn5UXmtr2]){
-				if (SensorValue[potFlipFlop] > FLIPFLOPUP - 250){
-					break;
-				}
 			}
 			motor[flipflop] = 0;
-			if (SensorValue[potFlipFlop] < FLIPFLOPDOWN + 1000){
-				motor[flipflop] = 10;
-			}
 		}
 		if (vexRT[Btn5D] || vexRT[Btn5DXmtr2]){
 			motor[flipflop] = -127;
@@ -198,13 +194,13 @@ task clawtask {
 			while (vexRT[Btn7U] == 1){
 				motor[claw] = 127;
 			}
-			motor[claw] = 35;
+			motor[claw] = 25;
 		}
 		if (vexRT[Btn7D] == 1){
 			while (vexRT[Btn7D] == 1){
 				motor[claw] = -127;
 			}
-			motor[claw] = -10;
+			motor[claw] = -20;
 		}
 	}
 }
@@ -225,7 +221,7 @@ task coneCounter(){
 
 void pre_auton(){
 	bLCDBacklight = true;
-	displayLCDCenteredString(0, "Initializing gyro...");
+	displayLCDCenteredString(0, "Init. gyro");
 	SensorType[gyro] = sensorNone;
 	wait1Msec(2000);
 	SensorType[gyro] = sensorGyro;
@@ -295,18 +291,22 @@ task autonomous()
 {
 	if (left) {
 		switch (autonChoice){
-			case 1: autonomousConeIn20Pt(false, false, false); break;
-			case 2: autonomousConeIn20Pt(false, false, true); break;
-			case 3: autonomousConeIn20Pt(false, true, false); break;
-			case 4: autonDefense(); break;
+			case 1: autonomousConeIn20Pt(false, false, false, false); break;
+			case 2: autonomousConeIn20Pt(false, false, true, false); break;
+			case 3: autonomousConeIn20Pt(false, true, false, false); break;
+			case 4: autonomousConeIn20Pt(false, false, true, true); break;
+			case 5: autonomousStationary(); break;
+			case 6: autonDefense(); break;
 			default: break;
 		}
 	} else {
 		switch (autonChoice){
-			case 1: autonomousConeIn20Pt(true, false, false); break;
-			case 2: autonomousConeIn20Pt(true, false, true); break;
-			case 3: autonomousConeIn20Pt(true, true, false); break;
-			case 4: autonDefense(); break;
+			case 1: autonomousConeIn20Pt(true, false, false, false); break;
+			case 2: autonomousConeIn20Pt(true, false, true, false); break;
+			case 3: autonomousConeIn20Pt(true, true, false, false); break;
+			case 4: autonomousConeIn20Pt(true, false, true, true); break;
+			case 5: autonomousStationary(); break;
+			case 6: autonDefense(); break;
 			default: break;
 		}
 	}
