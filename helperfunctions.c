@@ -46,12 +46,18 @@ void assignDriveMotors(int lp, int rp){
 }
 
 task brakeWheels(){
-	int currentValue;
-	int motorPower;
+	int encoderValue;
+	int gyroValue;
+	int forwardPower;
+	int turnPower;
 	while (true){
-		currentValue = (-SensorValue[leftEncoder] + SensorValue[rightEncoder])/2; //TODO: check if signing is correct
-		motorPower = (goalDriveValue - currentValue)*KP_WHEELS - autonBrake*15;
-		assignDriveMotors(motorPower, motorPower);
+		encoderValue = (-SensorValue[leftEncoder] + SensorValue[rightEncoder])/2; //Signing correct
+		forwardPower = (goalDriveValue - currentValue)*KP_WHEELS - autonBrake*15;
+
+		gyroValue = SensorValue[gyro];
+		turnPower = (goalDriveAngle - currentValue)*KP_WHEELS - autonAngleBrake*15;
+
+		assignDriveMotors(forwardPower + turnPower, forwardPower - turnPower);
 	}
 }
 
@@ -79,7 +85,7 @@ void backwardDistance(int power, int distance){
 	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 50 && time1[T2] < distance + 2000){
 		//keep going
 	}
-	goalDriveValue = distance;
+	goalDriveValue = -distance;
 	autonBrake = -1;
 	startTask(brakeWheels);
 	wait1Msec(300);
@@ -133,12 +139,15 @@ void turnRight(int power, int degrees, bool reverse)
 	}
 	SensorValue[gyro] = 0;
 	assignDriveMotors(power,-power);
-	degrees = degrees * 10;
-	while (abs(SensorValue[gyro]) < degrees){
-		//do nothing
+	degrees = degrees*10;
+	while (abs(SensorValue[gyro]) < degrees - 100){
+		
 	}
-	assignDriveMotors(-40,40);
-	wait1Msec(180);
+	autonAngleBrake = 1;
+	goalDriveAngle = degrees;
+	startTask(brakeWheels);
+	wait1Msec(300);
+	stopTask(brakeWheels);
 	assignDriveMotors(0,0);
 }
 
@@ -152,11 +161,14 @@ void turnLeft(int power, int degrees, bool reverse)
 	SensorValue[gyro] = 0;
 	assignDriveMotors(-power,power);
 	degrees = degrees*10;
-	while (abs(SensorValue[gyro]) < degrees){
-		//do nothing
+	while (abs(SensorValue[gyro]) < degrees - 100){
+		
 	}
-	assignDriveMotors(40,-40);
-	wait1Msec(180);
+	autonAngleBrake = -1;
+	goalDriveAngle = -degrees;
+	startTask(brakeWheels);
+	wait1Msec(300);
+	stopTask(brakeWheels);
 	assignDriveMotors(0,0);
 }
 

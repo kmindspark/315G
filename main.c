@@ -39,8 +39,10 @@ int numCones = 0;
 int autonChoice = 0;
 bool left = true;
 bool brake = false;
-int autonBrake = 1;
+int autonForwardBrake = 0;
 int goalDriveValue;
+int autonAngleBrake = 0;
+int goalDriveAngle;
 
 bool skills = false;
 
