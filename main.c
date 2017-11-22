@@ -121,7 +121,9 @@ task drive(){
 			if (brake){
 				SensorValue[leftEncoder] = 0;
 				SensorValue[rightEncoder] = 0;
+				SensorValue[gyro] = 0;
 				goalDriveValue = 0;
+				goalDriveAngle = 0;
 				startTask(brakeWheels);
 			} else {
 				stopTask(brakeWheels);
