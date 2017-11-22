@@ -3,8 +3,8 @@
 #define BOTTOMARMPOS 0
 #define LOADERARMPOS 700
 #define STATIONARYARMPOS 1250
-#define KP_WHEELS 0.2 //TODO: experiment with scaling power polynomially (perhaps quadratically) instead of linearly when braking
-#define KP_ARM 0.2
+#define KP_WHEELS 0.5 //TODO: experiment with scaling power polynomially (perhaps quadratically) instead of linearly when braking
+#define KP_ARM 0.05
 
 int currentDownPos=BOTTOMARMPOS;
 bool autoStackingInProgress;
@@ -50,7 +50,7 @@ task brakeWheels(){
 	int motorPower;
 	while (true){
 		currentValue = (-SensorValue[leftEncoder] + SensorValue[rightEncoder])/2; //TODO: check if signing is correct
-		motorPower = (goalDriveValue - currentValue)*KP_WHEELS;
+		motorPower = (goalDriveValue - currentValue)*KP_WHEELS - autonBrake*15;
 		assignDriveMotors(motorPower, motorPower);
 	}
 }
@@ -60,17 +60,14 @@ void forwardDistance(int power, int distance){
 	SensorValue[leftEncoder] = 0;
 	SensorValue[rightEncoder] = 0;
 	assignDriveMotors(power, power);
-	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 100 && time1[T2] < distance + 2000){
+	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 50 && time1[T2] < distance + 2000){
 		//keep going
 	}
-	goalDriveValue = distance + 30;
+	goalDriveValue = distance;
+	autonBrake = 1;
 	startTask(brakeWheels);
-	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance && time1[T2] < distance + 2000){
-		//keep going
-	}
+	wait1Msec(300);
 	stopTask(brakeWheels);
-	assignDriveMotors(-40, -40);
-	wait1Msec(100);
 	assignDriveMotors(0, 0);
 }
 
@@ -79,17 +76,14 @@ void backwardDistance(int power, int distance){
 	SensorValue[leftEncoder] = 0;
 	SensorValue[rightEncoder] = 0;
 	assignDriveMotors(-power, -power);
-	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 100 && time1[T2] < distance + 2000){
+	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 50 && time1[T2] < distance + 2000){
 		//keep going
 	}
-	goalDriveValue = -(distance + 30);
+	goalDriveValue = distance;
+	autonBrake = -1;
 	startTask(brakeWheels);
-	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance && time1[T2] < distance + 2000){
-		//keep going
-	}
+	wait1Msec(300);
 	stopTask(brakeWheels);
-	assignDriveMotors(40, 40);
-	wait1Msec(100);
 	assignDriveMotors(0, 0);
 }
 

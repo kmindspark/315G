@@ -39,6 +39,7 @@ int numCones = 0;
 int autonChoice = 0;
 bool left = true;
 bool brake = false;
+int autonBrake = 1;
 int goalDriveValue;
 
 bool skills = false;
@@ -82,6 +83,7 @@ task slew{
 }
 
 task drive(){
+	autonBrake = 0;
 	startTask(slew);
 	int forward;
 	int turn;
@@ -92,6 +94,7 @@ task drive(){
 	while (true){
 		if (abs(filter(vexRT[Ch3])) > 0 || abs(filter(vexRT[Ch1])) > 0){
 			brake = false;
+			stopTask(brakeWheels);
 			forward = filter(vexRT[Ch3]);
 			turn = filter(vexRT[Ch1]);
 		}
@@ -330,9 +333,10 @@ task autonomous()
 
 task usercontrol(){
 	startTask(drive);
+	/*
 	startTask(arm);
 	startTask(clawtask);
 	startTask(flipfloptask);
 	startTask(mogo);
-	startTask(coneCounter);
+	startTask(coneCounter);*/
 }
