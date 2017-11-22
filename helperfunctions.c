@@ -179,9 +179,9 @@ task autoStack(){
 	autoStackingInProgress = true;
 	closeClaw();
 	assignFlipFlop(127);
+	assignArmMotors(127);
 	wait1Msec(200);
 	assignFlipFlop(0);
-	assignArmMotors(127);
 	int goalPos = positions[numCones];
 	while(SensorValue[potArm] < goalPos){
 		if (SensorValue[potArm] > goalPos - 200){
@@ -194,7 +194,7 @@ task autoStack(){
 		//wait
 	}
 	assignFlipFlop(0);
-	assignArmMotors(-127);
+	assignArmMotors(-40);
 	wait1Msec(300);
 	openClaw();
 	assignArmMotors(127);
