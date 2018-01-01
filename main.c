@@ -155,7 +155,9 @@ task lift(){
 		}
 		if (vexRT[Btn7R] == 1){
 			stopTask(maintainLiftPos);
-			autoStackCones();
+			if (numCones <= 12){
+				autoStackCones();
+			}
 			numCones++;
 		}
 		if (vexRT[Btn7L] == 1){
