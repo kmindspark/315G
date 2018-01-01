@@ -1,15 +1,15 @@
-#pragma config(Sensor, in2,    potArm,         sensorPotentiometer)
-#pragma config(Sensor, in3,    potFlipFlop,    sensorPotentiometer)
+#pragma config(Sensor, in2,    potLift,         sensorPotentiometer)
+#pragma config(Sensor, in3,    potArm,    sensorPotentiometer)
 #pragma config(Sensor, in4,    gyro,           sensorGyro)
 #pragma config(Sensor, dgtl1,  leftEncoder,    sensorQuadEncoder)
 #pragma config(Sensor, dgtl3,  rightEncoder,   sensorQuadEncoder)
 #pragma config(Motor,  port1,           mogoL,         tmotorVex393_HBridge, openLoop, reversed)
 #pragma config(Motor,  port2,           df,            tmotorVex393HighSpeed_MC29, openLoop)
 #pragma config(Motor,  port3,           db,            tmotorVex393HighSpeed_MC29, openLoop)
-#pragma config(Motor,  port4,           flipflop,      tmotorVex393_MC29, openLoop)
-#pragma config(Motor,  port5,           armL,          tmotorVex393_MC29, openLoop, reversed)
-#pragma config(Motor,  port6,           armR,          tmotorVex393_MC29, openLoop)
-#pragma config(Motor,  port7,           claw,          tmotorVex393_MC29, openLoop)
+#pragma config(Motor,  port4,           armL,      tmotorVex393_MC29, openLoop)
+#pragma config(Motor,  port5,           liftL,          tmotorVex393_MC29, openLoop, reversed)
+#pragma config(Motor,  port6,           liftR,          tmotorVex393_MC29, openLoop)
+#pragma config(Motor,  port7,           armR,          tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port8,           pf,            tmotorVex393HighSpeed_MC29, openLoop, reversed)
 #pragma config(Motor,  port9,           pb,            tmotorVex393HighSpeed_MC29, openLoop, reversed)
 #pragma config(Motor,  port10,          mogoR,         tmotorVex393_HBridge, openLoop)
@@ -133,28 +133,28 @@ task drive(){
 	}
 }
 
-task arm(){
+task lift(){
 	while(true){
 		if(vexRT[Btn6U] == 1){
-			stopTask(maintainArmPos);
-			assignArmMotors(127);
+			stopTask(maintainLiftPos);
+			assignLiftMotors(127);
 			while(vexRT[Btn6U] == 1)
 			{
 
 			}
-			startTask(maintainArmPos);
+			startTask(maintainLiftPos);
 		}
 		if(vexRT[Btn6D] == 1){
-			stopTask(maintainArmPos);
-			assignArmMotors(-127);
+			stopTask(maintainLiftPos);
+			assignLiftMotors(-127);
 			while(vexRT[Btn6D] == 1)
 			{
 
 			}
-			assignArmMotors(0);
+			assignLiftMotors(0);
 		}
 		if (vexRT[Btn7R] == 1){
-			stopTask(maintainArmPos);
+			stopTask(maintainLiftPos);
 			autoStackCones();
 			numCones++;
 		}
@@ -203,20 +203,20 @@ task mogo(){
 	}
 }
 
-task flipfloptask {
+task armtask {
 	while (true) {
 		if (vexRT[Btn5U]){
-			motor[flipflop] = 127;
+			assignArmMotors(127)
 			while (vexRT[Btn5U]){
 			}
-			motor[flipflop] = 0;
+			assignArmMotors(0);
 		}
 		if (vexRT[Btn5D]){
-			motor[flipflop] = -127;
+			assignArmMotors(-127);
 			while (vexRT[Btn5D]){
 
 			}
-			motor[flipflop] = -5;
+			assignArmMotors(0);
 		}
 	}
 }
@@ -353,9 +353,9 @@ task usercontrol(){
 	turnRight(127, 90, false);*/
 	startTask(drive);
 	startTask(mogo);
-	startTask(arm);
-	startTask(clawtask);
-	startTask(flipfloptask);
+	startTask(lift);
+	//startTask(clawtask);
+	startTask(armtask);
 	startTask(mogo);
 	startTask(coneCounter);
 }

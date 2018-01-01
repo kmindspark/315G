@@ -1,8 +1,8 @@
-#define FLIPFLOPDOWN 1600
-#define FLIPFLOPUP 2850
-#define BOTTOMARMPOS 0
-#define LOADERARMPOS 700
-#define STATIONARYARMPOS 1250
+#define ARMDOWN 1600
+#define ARMUP 2850
+#define BOTTOMLIFTPOS 0
+#define LOADERLIFTPOS 700
+#define STATIONARYLIFTPOS 1250
 #define KP_WHEELS_FORWARD 1 //TODO: experiment with scaling power polynomially (perhaps quadratically) instead of linearly when braking
 #define KP_WHEELS_ANGLE 0.2
 #define KP_WHEELS_LOCK_ANGLE 0.5
@@ -35,9 +35,9 @@ void openClaw()
 }
 
 
-void assignArmMotors(int power){
-	motor[armL] = power;
-	motor[armR] = power;
+void assignLiftMotors(int power){
+	motor[liftL] = power;
+	motor[liftR] = power;
 }
 
 void assignDriveMotors(int lp, int rp){
@@ -180,17 +180,18 @@ void turnLeft(int power, int degrees, bool reverse)
 	assignDriveMotors(0,0);
 }
 
-void assignFlipFlop(int power)
+void assignArmMotors(int power)
 {
-	motor[flipflop] = power;
+	motor[armL] = power;
+	motor[armR] = power;
 }
 
-task maintainArmPos(){
-	int goalPos = SensorValue[potArm];
+task maintainLiftPos(){
+	int goalPos = SensorValue[potLift];
 	int diff;
 	while (true){
-		diff = goalPos - SensorValue[potArm];
-		assignArmMotors(diff*KP_ARM+5);
+		diff = goalPos - SensorValue[potLift];
+		assignLiftMotors(diff*KP_ARM+5);
 		wait1Msec(10);
 	}
 }
@@ -198,40 +199,40 @@ task maintainArmPos(){
 task autoStack(){
 	autoStackingInProgress = true;
 	closeClaw();
-	assignFlipFlop(127);
 	assignArmMotors(127);
+	assignLiftMotors(127);
 	wait1Msec(200);
-	assignFlipFlop(0);
+	assignArmMotors(0);
 	int goalPos = positions[numCones];
-	while(SensorValue[potArm] < goalPos){
-		if (SensorValue[potArm] > goalPos - 200){
-			assignFlipFlop(127);
+	while(SensorValue[potLift] < goalPos){
+		if (SensorValue[potLift] > goalPos - 200){
+			assignArmMotors(127);
 		}
 	}
-	assignArmMotors(10);
-	assignFlipFlop(127);
-	while(SensorValue[potFlipFlop] < FLIPFLOPUP){
+	assignLiftMotors(10);
+	assignArmMotors(127);
+	while(SensorValue[potArmMotors] < ARMUP){
 		//wait
 	}
-	assignFlipFlop(0);
-	assignArmMotors(-40);
+	assignArmMotors(0);
+	assignLiftMotors(-40);
 	wait1Msec(300);
 	openClaw();
-	assignArmMotors(127);
-	wait1Msec(200);
-	assignFlipFlop(-127);
+	assignLiftMotors(127);
 	wait1Msec(200);
 	assignArmMotors(-127);
-	while (SensorValue[potArm] > currentDownPos){
+	wait1Msec(200);
+	assignLiftMotors(-127);
+	while (SensorValue[potLift] > currentDownPos){
 		//wait
 	}
-	assignArmMotors(-10);
-	if (SensorValue[potFlipFlop] >= FLIPFLOPDOWN){
-		while (SensorValue[potFlipFlop] >= FLIPFLOPDOWN){
+	assignLiftMotors(-10);
+	if (SensorValue[potArmMotors] >= ARMDOWN){
+		while (SensorValue[potArmMotors] >= ARMDOWN){
 			//wait
 		}
 	}
-	assignFlipFlop(0);
+	assignArmMotors(0);
 	autoStackingInProgress = false;
 }
 

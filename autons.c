@@ -5,22 +5,22 @@ string autons[8] = {"No Auton", "1 Cone", "5 Pt Cone", "10 Pt Cone", "20 Pt Cone
 
 void autonomousStationary(){
 	motor[claw] = 20;
-	assignArmMotors(127);
-	assignFlipFlop(-127);
-	while (SensorValue[potArm] < STATIONARYARMPOS){
+	assignLiftMotors(127);
+	assignArmMotors(-127);
+	while (SensorValue[potLift] < STATIONARYARMPOS){
 
 	}
-	assignArmMotors(-20);
+	assignLiftMotors(-20);
 	wait1Msec(200);
-	assignArmMotors(10);
-	assignFlipFlop(0);
+	assignLiftMotors(10);
+	assignArmMotors(0);
 	forward(50, 700);
-	assignArmMotors(-20);
+	assignLiftMotors(-20);
 	wait1Msec(300);
 	backwardTime(30, 800);
 	openClaw();
 	backwardTime(127, 500);
-	assignArmMotors(0);
+	assignLiftMotors(0);
 	motor[claw] = 0;
 }
 
@@ -28,17 +28,17 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 {
 	clearTimer(T1);
 	motor[claw] = 20; //Drive forward to pick up mobile goal and score the cone on it
-	assignArmMotors(60);
+	assignLiftMotors(60);
 	assignMogoMotors(-127);
 	forward(127,600);
-	assignArmMotors(10);
+	assignLiftMotors(10);
 	forward(127,1400);
 	assignMogoMotors(127);
 	wait1Msec(1300);
 	assignMogoMotors(0);
-	assignArmMotors(-127);
+	assignLiftMotors(-127);
 	wait1Msec(200);
-	assignArmMotors(0);
+	assignLiftMotors(0);
 	wait1Msec(200);
 	openClaw(); //At this point the one cone is scored
 
@@ -60,9 +60,9 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 		if (tenpt){
 			forwardTime(127, 800);
 		}
-		assignArmMotors(127);
+		assignLiftMotors(127);
 		wait1Msec(300);
-		assignArmMotors(10);
+		assignLiftMotors(10);
 		assignMogoMotors(-127);
 		wait1Msec(1000);
 		assignMogoMotors(0);
@@ -74,9 +74,9 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 	forward(127, 1000);//880
 	turnRight(127, 75, reverse);
 	forward(100, 700);
-	assignArmMotors(127);
+	assignLiftMotors(127);
 	wait1Msec(300);
-	assignArmMotors(10);
+	assignLiftMotors(10);
 	assignMogoMotors(-127); //Begin deposit sequence
 	forwardTime(100, 900);
 	wait1Msec(500);
