@@ -3,7 +3,9 @@
 #define BOTTOMARMPOS 0
 #define LOADERARMPOS 700
 #define STATIONARYARMPOS 1250
-#define KP_WHEELS 0.5 //TODO: experiment with scaling power polynomially (perhaps quadratically) instead of linearly when braking
+#define KP_WHEELS_FORWARD 1 //TODO: experiment with scaling power polynomially (perhaps quadratically) instead of linearly when braking
+#define KP_WHEELS_ANGLE 0.2
+#define KP_WHEELS_LOCK_ANGLE 0.5
 #define KP_ARM 0.05
 
 int currentDownPos=BOTTOMARMPOS;
@@ -50,13 +52,19 @@ task brakeWheels(){
 	int gyroValue;
 	int forwardPower;
 	int turnPower;
+	int kTurn;
 	while (true){
 		encoderValue = (-SensorValue[leftEncoder] + SensorValue[rightEncoder])/2; //Signing correct
-		forwardPower = (goalDriveValue - currentValue)*KP_WHEELS - autonBrake*15;
+		forwardPower = (goalDriveValue - encoderValue)*KP_WHEELS_FORWARD - autonForwardBrake*15;
 
 		gyroValue = SensorValue[gyro];
-		turnPower = (goalDriveAngle - currentValue)*KP_WHEELS - autonAngleBrake*15;
 
+		if (brake){
+			kTurn = KP_WHEELS_LOCK_ANGLE;
+		} else {
+			kTurn = KP_WHEELS_ANGLE;
+		}
+		turnPower = (goalDriveAngle - gyroValue)*KP_WHEELS_ANGLE - autonAngleBrake*5;
 		assignDriveMotors(forwardPower + turnPower, forwardPower - turnPower);
 	}
 }
@@ -70,9 +78,9 @@ void forwardDistance(int power, int distance){
 		//keep going
 	}
 	goalDriveValue = distance;
-	autonBrake = 1;
+	autonForwardBrake = 0;//1 - skills;
 	startTask(brakeWheels);
-	wait1Msec(300);
+	wait1Msec(500);
 	stopTask(brakeWheels);
 	assignDriveMotors(0, 0);
 }
@@ -86,9 +94,9 @@ void backwardDistance(int power, int distance){
 		//keep going
 	}
 	goalDriveValue = -distance;
-	autonBrake = -1;
+	autonForwardBrake = 0;//-1 + skills;
 	startTask(brakeWheels);
-	wait1Msec(300);
+	wait1Msec(500);
 	stopTask(brakeWheels);
 	assignDriveMotors(0, 0);
 }
@@ -140,13 +148,13 @@ void turnRight(int power, int degrees, bool reverse)
 	SensorValue[gyro] = 0;
 	assignDriveMotors(power,-power);
 	degrees = degrees*10;
-	while (abs(SensorValue[gyro]) < degrees - 100){
-		
+	while (abs(SensorValue[gyro]) < degrees - 500){
+
 	}
-	autonAngleBrake = 1;
+	autonAngleBrake = 0;//1 - skills;
 	goalDriveAngle = degrees;
 	startTask(brakeWheels);
-	wait1Msec(300);
+	wait1Msec(1000);
 	stopTask(brakeWheels);
 	assignDriveMotors(0,0);
 }
@@ -161,13 +169,13 @@ void turnLeft(int power, int degrees, bool reverse)
 	SensorValue[gyro] = 0;
 	assignDriveMotors(-power,power);
 	degrees = degrees*10;
-	while (abs(SensorValue[gyro]) < degrees - 100){
-		
+	while (abs(SensorValue[gyro]) < degrees - 500){
+
 	}
-	autonAngleBrake = -1;
+	autonAngleBrake = 0;//-1+skills;
 	goalDriveAngle = -degrees;
 	startTask(brakeWheels);
-	wait1Msec(300);
+	wait1Msec(1000);
 	stopTask(brakeWheels);
 	assignDriveMotors(0,0);
 }

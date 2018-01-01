@@ -44,7 +44,7 @@ int goalDriveValue;
 int autonAngleBrake = 0;
 int goalDriveAngle;
 
-bool skills = false;
+int skills = 1;
 
 #include "autons.c"
 
@@ -85,7 +85,7 @@ task slew{
 }
 
 task drive(){
-	autonBrake = 0;
+	autonForwardBrake = 0;
 	startTask(slew);
 	int forward;
 	int turn;
@@ -98,11 +98,11 @@ task drive(){
 			brake = false;
 			stopTask(brakeWheels);
 			forward = filter(vexRT[Ch3]);
-			turn = filter(vexRT[Ch1]);
+			turn = filter(vexRT[Ch1]) * (1 - skills*0.5);
 		}
 		else{
 			forward = filter(vexRT[Ch3] + vexRT[Ch3Xmtr2]/2);
-			turn = filter(vexRT[Ch1] + vexRT[Ch1Xmtr2]/2);
+			turn = filter(vexRT[Ch1] + vexRT[Ch1Xmtr2]/2) * (1 - skills*0.5);
 		}
 
 		goalDrivePowerL = forward + turn;
@@ -187,6 +187,18 @@ task mogo(){
 
 			}
 			assignMogoMotors(0);
+		}
+		if (skills == 1){
+			if (vexRT[Btn6U]){
+				assignMogoMotors(127);
+				wait1Msec(800);
+				assignMogoMotors(5);
+			}
+			if (vexRT[Btn6D]){
+				assignMogoMotors(-127);
+				wait1Msec(600);
+				assignMogoMotors(0);
+			}
 		}
 	}
 }
@@ -336,11 +348,14 @@ task autonomous()
 }
 
 task usercontrol(){
+	/*forwardDistance(127, 200);
+	wait1Msec(3000);
+	turnRight(127, 90, false);*/
 	startTask(drive);
-	/*
+	startTask(mogo);
 	startTask(arm);
 	startTask(clawtask);
 	startTask(flipfloptask);
 	startTask(mogo);
-	startTask(coneCounter);*/
+	startTask(coneCounter);
 }
