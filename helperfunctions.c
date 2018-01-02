@@ -236,8 +236,43 @@ task autoStack(){
 	autoStackingInProgress = false;
 }
 
+task autoStack(){
+	autoStackingInProgress = true;
+	closeClaw();
+	assignArmMotors(127);
+	assignLiftMotors(127);
+	wait1Msec(200);
+	assignArmMotors(0);
+	int goalPos = positions[numCones];
+	while(SensorValue[potLift] < goalPos){
+		if (SensorValue[potLift] > goalPos - 200){
+			assignArmMotors(127);
+		}
+	}
+	assignLiftMotors(10);
+	assignArmMotors(127);
+	wait1Msec(300);
+	assignArmMotors(0);
+	assignLiftMotors(-127);
+	wait1Msec(300);
+	assignArmMotors(-127);
+	if (SensorValue[potArmMotors] >= ARMDOWN){
+		while (SensorValue[potArmMotors] >= ARMDOWN){
+			//wait
+		}
+	}
+	assignArmMotors(-5);
+
+	while (SensorValue[potLift] > currentDownPos){
+		//wait
+	}
+	assignLiftMotors(-10);
+	
+	autoStackingInProgress = false;
+}
+
 void autoStackCones(){
-	startTask(autoStack);
+	startTask(autoStack2);
 	clearTimer(T3);
 	while (time1[T3] < 4000 && autoStackingInProgress){
 
