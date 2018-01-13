@@ -207,16 +207,20 @@ task flipfloptask {
 	while (true) {
 		if (vexRT[Btn5U]){
 			motor[flipflop] = 127;
+			motor[claw] = -127;
 			while (vexRT[Btn5U]){
 			}
 			motor[flipflop] = 0;
+			motor[claw] = 0;
 		}
 		if (vexRT[Btn5D]){
 			motor[flipflop] = -127;
+			motor[claw] = 127;
 			while (vexRT[Btn5D]){
 
 			}
 			motor[flipflop] = -5;
+			motor[claw] = 5;
 		}
 	}
 }
