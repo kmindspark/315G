@@ -208,17 +208,21 @@ task mogo(){
 task armtask {
 	while (true) {
 		if (vexRT[Btn5U]){
-			assignArmMotors(127)
+			motor[flipflop] = 127;
+			motor[claw] = -127;
 			while (vexRT[Btn5U]){
 			}
-			assignArmMotors(0);
+			motor[flipflop] = 0;
+			motor[claw] = 0;
 		}
 		if (vexRT[Btn5D]){
-			assignArmMotors(-127);
+			motor[flipflop] = -127;
+			motor[claw] = 127;
 			while (vexRT[Btn5D]){
 
 			}
-			assignArmMotors(0);
+			motor[flipflop] = -5;
+			motor[claw] = 5;
 		}
 	}
 }
