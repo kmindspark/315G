@@ -1,12 +1,13 @@
-#define ARMDOWN 1600
-#define ARMUP 2850
-#define BOTTOMLIFTPOS 0
-#define LOADERLIFTPOS 700
-#define STATIONARYLIFTPOS 1250
+#define FLIPFLOPDOWN 1600
+#define FLIPFLOPUP 2850
+#define BOTTOMARMPOS 0
+#define LOADERARMPOS 700
+#define STATIONARYARMPOS 1250
 #define KP_WHEELS_FORWARD 1 //TODO: experiment with scaling power polynomially (perhaps quadratically) instead of linearly when braking
 #define KP_WHEELS_ANGLE 0.2
 #define KP_WHEELS_LOCK_ANGLE 0.5
 #define KP_ARM 0.05
+#define KP_CORRECTDRIVE 0.2
 
 int currentDownPos=BOTTOMARMPOS;
 bool autoStackingInProgress;
@@ -35,9 +36,9 @@ void openClaw()
 }
 
 
-void assignLiftMotors(int power){
-	motor[liftL] = power;
-	motor[liftR] = power;
+void assignArmMotors(int power){
+	motor[armL] = power;
+	motor[armR] = power;
 }
 
 void assignDriveMotors(int lp, int rp){
@@ -74,7 +75,10 @@ void forwardDistance(int power, int distance){
 	SensorValue[leftEncoder] = 0;
 	SensorValue[rightEncoder] = 0;
 	assignDriveMotors(power, power);
+	int difference;
 	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 50 && time1[T2] < distance + 2000){
+		difference = KP_CORRECTDRIVE*(abs(SensorValue[leftEncoder]) - abs(SensorValue[rightEncoder]));
+		assignDriveMotors(power - difference, power + difference);
 		//keep going
 	}
 	goalDriveValue = distance;
@@ -90,7 +94,10 @@ void backwardDistance(int power, int distance){
 	SensorValue[leftEncoder] = 0;
 	SensorValue[rightEncoder] = 0;
 	assignDriveMotors(-power, -power);
+	int difference;
 	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 50 && time1[T2] < distance + 2000){
+		difference = KP_CORRECTDRIVE*(abs(SensorValue[leftEncoder]) - abs(SensorValue[rightEncoder]));
+		assignDriveMotors(-power + difference, -power + difference);
 		//keep going
 	}
 	goalDriveValue = -distance;
@@ -180,18 +187,17 @@ void turnLeft(int power, int degrees, bool reverse)
 	assignDriveMotors(0,0);
 }
 
-void assignArmMotors(int power)
+void assignFlipFlop(int power)
 {
-	motor[armL] = power;
-	motor[armR] = power;
+	motor[flipflop] = power;
 }
 
-task maintainLiftPos(){
-	int goalPos = SensorValue[potLift];
+task maintainArmPos(){
+	int goalPos = SensorValue[potArm];
 	int diff;
 	while (true){
-		diff = goalPos - SensorValue[potLift];
-		assignLiftMotors(diff*KP_ARM+5);
+		diff = goalPos - SensorValue[potArm];
+		assignArmMotors(diff*KP_ARM+5);
 		wait1Msec(10);
 	}
 }
@@ -199,80 +205,45 @@ task maintainLiftPos(){
 task autoStack(){
 	autoStackingInProgress = true;
 	closeClaw();
+	assignFlipFlop(127);
 	assignArmMotors(127);
-	assignLiftMotors(127);
 	wait1Msec(200);
-	assignArmMotors(0);
+	assignFlipFlop(0);
 	int goalPos = positions[numCones];
-	while(SensorValue[potLift] < goalPos){
-		if (SensorValue[potLift] > goalPos - 200){
-			assignArmMotors(127);
+	while(SensorValue[potArm] < goalPos){
+		if (SensorValue[potArm] > goalPos - 200){
+			assignFlipFlop(127);
 		}
 	}
-	assignLiftMotors(10);
-	assignArmMotors(127);
-	while(SensorValue[potArmMotors] < ARMUP){
+	assignArmMotors(10);
+	assignFlipFlop(127);
+	while(SensorValue[potFlipFlop] < FLIPFLOPUP){
 		//wait
 	}
-	assignArmMotors(0);
-	assignLiftMotors(-40);
+	assignFlipFlop(0);
+	assignArmMotors(-40);
 	wait1Msec(300);
 	openClaw();
-	assignLiftMotors(127);
+	assignArmMotors(127);
+	wait1Msec(200);
+	assignFlipFlop(-127);
 	wait1Msec(200);
 	assignArmMotors(-127);
-	wait1Msec(200);
-	assignLiftMotors(-127);
-	while (SensorValue[potLift] > currentDownPos){
+	while (SensorValue[potArm] > currentDownPos){
 		//wait
 	}
-	assignLiftMotors(-10);
-	if (SensorValue[potArmMotors] >= ARMDOWN){
-		while (SensorValue[potArmMotors] >= ARMDOWN){
+	assignArmMotors(-10);
+	if (SensorValue[potFlipFlop] >= FLIPFLOPDOWN){
+		while (SensorValue[potFlipFlop] >= FLIPFLOPDOWN){
 			//wait
 		}
 	}
-	assignArmMotors(0);
-	autoStackingInProgress = false;
-}
-
-task autoStack(){
-	autoStackingInProgress = true;
-	closeClaw();
-	assignArmMotors(127);
-	assignLiftMotors(127);
-	wait1Msec(200);
-	assignArmMotors(0);
-	int goalPos = positions[numCones];
-	while(SensorValue[potLift] < goalPos){
-		if (SensorValue[potLift] > goalPos - 200){
-			assignArmMotors(127);
-		}
-	}
-	assignLiftMotors(10);
-	assignArmMotors(127);
-	wait1Msec(300);
-	assignArmMotors(0);
-	assignLiftMotors(-127);
-	wait1Msec(300);
-	assignArmMotors(-127);
-	if (SensorValue[potArmMotors] >= ARMDOWN){
-		while (SensorValue[potArmMotors] >= ARMDOWN){
-			//wait
-		}
-	}
-	assignArmMotors(-5);
-
-	while (SensorValue[potLift] > currentDownPos){
-		//wait
-	}
-	assignLiftMotors(-10);
-	
+	assignFlipFlop(0);
 	autoStackingInProgress = false;
 }
 
 void autoStackCones(){
-	startTask(autoStack2);
+	startTask(autoStack);
 	clearTimer(T3);
 	while (time1[T3] < 4000 && autoStackingInProgress){
 
