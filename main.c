@@ -35,14 +35,21 @@ int currentDrivePowerL = 0;
 int currentDrivePowerR = 0;
 
 TVexReceiverState competitionState;
-int currentConeCount = 0;
+int numCones = 0;
 int autonChoice = 0;
 bool left = true;
+bool brake = false;
+int autonForwardBrake = 0;
+int goalDriveValue;
+int autonAngleBrake = 0;
+int goalDriveAngle;
+
+int skills = 1;
 
 #include "autons.c"
 
 int filter(int input){
-	if (input > 20 || input < -20){
+	if (abs(input) > 20){
 		return input;
 	}
 	else {
@@ -78,6 +85,7 @@ task slew{
 }
 
 task drive(){
+	autonForwardBrake = 0;
 	startTask(slew);
 	int forward;
 	int turn;
@@ -87,13 +95,16 @@ task drive(){
 	int motor4;
 	while (true){
 		if (abs(filter(vexRT[Ch3])) > 0 || abs(filter(vexRT[Ch1])) > 0){
+			brake = false;
+			stopTask(brakeWheels);
 			forward = filter(vexRT[Ch3]);
-			turn = filter(vexRT[Ch1]);
+			turn = filter(vexRT[Ch1]) * (1 - skills*0.5);
 		}
 		else{
 			forward = filter(vexRT[Ch3] + vexRT[Ch3Xmtr2]/2);
-			turn = filter(vexRT[Ch1] + vexRT[Ch1Xmtr2]/2);
+			turn = filter(vexRT[Ch1] + vexRT[Ch1Xmtr2]/2) * (1 - skills*0.5);
 		}
+
 		goalDrivePowerL = forward + turn;
 		goalDrivePowerR = forward - turn;
 		motor1 = currentDrivePowerL;
@@ -104,30 +115,48 @@ task drive(){
 		motor[db] = motor2;
 		motor[pf] = motor3;
 		motor[pb] = motor4;
+
+		if (vexRT[Btn8L]){
+			brake = !brake;
+			if (brake){
+				SensorValue[leftEncoder] = 0;
+				SensorValue[rightEncoder] = 0;
+				SensorValue[gyro] = 0;
+				goalDriveValue = 0;
+				goalDriveAngle = 0;
+				startTask(brakeWheels);
+			} else {
+				stopTask(brakeWheels);
+			}
+			wait1Msec(200);
+		}
 	}
 }
 
 task arm(){
 	while(true){
-		if(vexRT[Btn6U] == 1 || vexRT[Btn6UXmtr2] == 1){
+		if(vexRT[Btn6U] == 1){
+			stopTask(maintainArmPos);
 			assignArmMotors(127);
-			while(vexRT[Btn6U] == 1 || vexRT[Btn6UXmtr2] == 1)
+			while(vexRT[Btn6U] == 1)
 			{
 
 			}
 			assignArmMotors(10);
 		}
-		if(vexRT[Btn6D] == 1 || vexRT[Btn6DXmtr2] == 1){
+		if(vexRT[Btn6D] == 1){
+			stopTask(maintainArmPos);
 			assignArmMotors(-127);
-			while(vexRT[Btn6D] == 1 || vexRT[Btn6DXmtr2] == 1)
+			while(vexRT[Btn6D] == 1)
 			{
 
 			}
-			assignArmMotors(-10);
+			assignArmMotors(0);
 		}
 		if (vexRT[Btn7R] == 1){
-			currentConeCount++;
-			autoStack(currentConeCount);
+			stopTask(maintainArmPos);
+			autoStackCones();
+			numCones++;
 		}
 		if (vexRT[Btn7L] == 1){
 			if (currentDownPos == BOTTOMARMPOS){
@@ -152,38 +181,46 @@ task mogo(){
 			assignMogoMotors(10);
 		}
 		if(vexRT[Btn8D]){
-			assignMogoMotors(-100);
+			assignMogoMotors(-127);
 			while(vexRT[Btn8D] == 1)
 			{
 
 			}
 			assignMogoMotors(0);
 		}
+		if (skills == 1){
+			if (vexRT[Btn6U]){
+				assignMogoMotors(127);
+				wait1Msec(800);
+				assignMogoMotors(5);
+			}
+			if (vexRT[Btn6D]){
+				assignMogoMotors(-127);
+				wait1Msec(600);
+				assignMogoMotors(0);
+			}
+		}
 	}
 }
 
 task flipfloptask {
 	while (true) {
-		if (vexRT[Btn5U] || vexRT[Btn5UXmtr2]){
+		if (vexRT[Btn5U]){
 			motor[flipflop] = 127;
-			while (vexRT[Btn5U] || vexRT[Btn5UXmtr2]){
+			motor[claw] = -127;
+			while (vexRT[Btn5U]){
 			}
 			motor[flipflop] = 0;
+			motor[claw] = 0;
 		}
-		if (vexRT[Btn5D] || vexRT[Btn5DXmtr2]){
+		if (vexRT[Btn5D]){
 			motor[flipflop] = -127;
-			while (vexRT[Btn5D] || vexRT[Btn5DXmtr2]){
+			motor[claw] = 127;
+			while (vexRT[Btn5D]){
 
 			}
 			motor[flipflop] = -5;
-		}
-
-		if (vexRT[Btn7R] || vexRT[Btn7RXmtr2]){
-			motor[flipflop] = -127;
-			while (SensorValue[potFlipFlop] > FLIPFLOPDOWN){
-
-			}
-			motor[flipflop] = -5;
+			motor[claw] = 5;
 		}
 	}
 }
@@ -210,13 +247,13 @@ task clawtask {
 task coneCounter(){
 	while (true){
 		if (vexRT[Btn8DXmtr2]){
-			currentConeCount = 0;
+			numCones = 0;
 		}
 		if (vexRT[Btn8LXmtr2]){
-			currentConeCount--;
+			numCones--;
 		}
 		if (vexRT[Btn8RXmtr2]){
-			currentConeCount++;
+			numCones++;
 		}
 	}
 }
@@ -315,7 +352,11 @@ task autonomous()
 }
 
 task usercontrol(){
+	/*forwardDistance(127, 200);
+	wait1Msec(3000);
+	turnRight(127, 90, false);*/
 	startTask(drive);
+	startTask(mogo);
 	startTask(arm);
 	startTask(clawtask);
 	startTask(flipfloptask);
