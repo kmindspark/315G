@@ -99,3 +99,43 @@ void autonDefense(){
 	closeClaw();
 	backwardTime(127, 4000);
 }
+
+
+void programmingSkills(){
+	assignMogoMotors(-127);
+	wait1Msec(500);
+	forwardDistance(127, 700);
+	assignMogoMotors(127);
+    forwardDistance(40, 50)
+	wait1Msec(500);
+	assignMogoMotors(10);
+    backwardDistance(127, 600);
+    turnRight(80, 45, false);
+    backwardDistance(127, 300);
+    turnRight(80, 127, false);
+    assignMogoMotors(-80);
+    forwardTime(127, 1000);
+    assignMogoMotors(127);
+    backwardDistance(127, 300);
+    assignMogoMotors(0);
+    turnLeft(80, 90, false);
+    forwardDistance(127, 300);
+    turnLeft(80, 90, false);
+    assignMogoMotors(-127);
+    wait1Msec(500);
+    assignMogoMotors(0);
+    forwardDistance(127, 400);
+    forwardDistance(40, 50)
+    assignMogoMotors(127);
+    wait1Msec(500);
+    assignMogoMotors(10);
+    turnRight(80, 180, false);
+    forwardDistance(127, 400);
+    assignMogoMotors(-127);
+    wait1Msec(500);
+    assignMogoMotors(0);
+    backwardDistance(127, 200);
+    turnRight(80, 90, false);
+    forwardDistance(127, 300);
+
+}

@@ -1,11 +1,16 @@
-#define FLIPFLOPDOWN 2600
-#define FLIPFLOPUP 1230
-#define BOTTOMARMPOS 500
-#define LOADERARMPOS 1800
-#define STATIONARYARMPOS 2650
+#define FLIPFLOPDOWN 1600
+#define FLIPFLOPUP 2850
+#define BOTTOMARMPOS 0
+#define LOADERARMPOS 700
+#define STATIONARYARMPOS 1250
+#define KP_WHEELS_FORWARD 1 //TODO: experiment with scaling power polynomially (perhaps quadratically) instead of linearly when braking
+#define KP_WHEELS_ANGLE 0.2
+#define KP_WHEELS_LOCK_ANGLE 0.5
+#define KP_ARM 0.05
+#define KP_CORRECTDRIVE 0.2
 
 int currentDownPos=BOTTOMARMPOS;
-bool clawOpen = false;
+bool autoStackingInProgress;
 
 int positions[13]={120, 260, 470, 540, 700, 890, 1010, 1140, 1270, 1400, 1530, 1660, 1760};
 
@@ -18,7 +23,6 @@ int encoderAverage(int one, int two){
 
 void closeClaw()
 {
-	clawOpen = false;
 	motor[claw] = 127;
 	wait1Msec(500);
 	motor[claw] = 25;
@@ -26,9 +30,8 @@ void closeClaw()
 
 void openClaw()
 {
-	clawOpen = true;
 	motor[claw] = -127;
-	wait1Msec(300);
+	wait1Msec(500);
 	motor[claw] = -20;
 }
 
@@ -56,7 +59,6 @@ task brakeWheels(){
 		forwardPower = (goalDriveValue - encoderValue)*KP_WHEELS_FORWARD - autonForwardBrake*15;
 
 		gyroValue = SensorValue[gyro];
-
 		if (brake){
 			kTurn = KP_WHEELS_LOCK_ANGLE;
 		} else {
@@ -72,16 +74,17 @@ void forwardDistance(int power, int distance){
 	SensorValue[leftEncoder] = 0;
 	SensorValue[rightEncoder] = 0;
 	assignDriveMotors(power, power);
-	int difference;
+    int difference;
 	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 50 && time1[T2] < distance + 2000){
 		difference = KP_CORRECTDRIVE*(abs(SensorValue[leftEncoder]) - abs(SensorValue[rightEncoder]));
-		assignDriveMotors(power - difference, power + difference);
-		//keep going
++		assignDriveMotors(power - difference, power + difference);
 	}
 	goalDriveValue = distance;
-	autonForwardBrake = 0;//1 - skills;
+	autonForwardBrake = 1;
 	startTask(brakeWheels);
-	wait1Msec(500);
+	wait1Msec(200);
+    autonForwardBrake = 0;
+    wait1Msec(300);
 	stopTask(brakeWheels);
 	assignDriveMotors(0, 0);
 }
@@ -91,16 +94,17 @@ void backwardDistance(int power, int distance){
 	SensorValue[leftEncoder] = 0;
 	SensorValue[rightEncoder] = 0;
 	assignDriveMotors(-power, -power);
-	int difference;
+    int difference;
 	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 50 && time1[T2] < distance + 2000){
 		difference = KP_CORRECTDRIVE*(abs(SensorValue[leftEncoder]) - abs(SensorValue[rightEncoder]));
-		assignDriveMotors(-power + difference, -power + difference);
-		//keep going
++		assignDriveMotors(-power + difference, -power + difference);
 	}
 	goalDriveValue = -distance;
-	autonForwardBrake = 0;//-1 + skills;
+	autonForwardBrake = -1;
 	startTask(brakeWheels);
-	wait1Msec(500);
+	wait1Msec(200);
+    autonForwardBrake = 0;
+    wait1Msec(300);
 	stopTask(brakeWheels);
 	assignDriveMotors(0, 0);
 }
