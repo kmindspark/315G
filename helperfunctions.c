@@ -159,11 +159,13 @@ void turnRight(int power, int degrees, bool reverse)
 	while (abs(SensorValue[gyro]) < degrees - 500){
 
 	}
-	autonAngleBrake = 0;//1 - skills;
 	goalDriveAngle = degrees;
+    autonAngleBrake = 1;
 	startTask(brakeWheels);
-	wait1Msec(1000);
+	wait1Msec(200);
+    autonAngleBrake = 0;
 	stopTask(brakeWheels);
+    wait1Msec(300);
 	assignDriveMotors(0,0);
 }
 
@@ -180,11 +182,13 @@ void turnLeft(int power, int degrees, bool reverse)
 	while (abs(SensorValue[gyro]) < degrees - 500){
 
 	}
-	autonAngleBrake = 0;//-1+skills;
-	goalDriveAngle = -degrees;
+	goalDriveAngle = degrees;
+    autonAngleBrake = -1;
 	startTask(brakeWheels);
-	wait1Msec(1000);
+	wait1Msec(200);
+    autonAngleBrake = 0;
 	stopTask(brakeWheels);
+    wait1Msec(300);
 	assignDriveMotors(0,0);
 }
 
