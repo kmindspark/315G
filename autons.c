@@ -125,8 +125,8 @@ void programmingSkills(){
     wait1Msec(500);
     assignMogoMotors(0);
     forwardDistance(127, 400);
-    forwardDistance(40, 50)
     assignMogoMotors(127);
+    forwardDistance(40, 50)
     wait1Msec(500);
     assignMogoMotors(10);
     turnRight(80, 180, false);
@@ -136,6 +136,19 @@ void programmingSkills(){
     assignMogoMotors(0);
     backwardDistance(127, 200);
     turnRight(80, 90, false);
-    forwardDistance(127, 300);
+    forwardDistance(127, 500);
+    turnRight(80, 90, false);
+    forwardDistance(127, 400);
+    assignMogoMotors(127);
+    forwardDistance(40, 50)
+    wait1Msec(500);
+    assignMogoMotors(10);
+    turnRight(80, 180, false);
+    forwardDistance(127, 400);
+    assignMogoMotors(-127);
+    wait1Msec(500);
+    assignMogoMotors(0);
+    backwardDistance(127, 200);
+    turnRight(80, 180, false);
 
 }
