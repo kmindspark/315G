@@ -324,7 +324,7 @@ void pre_auton(){
 
 task autonomous()
 {
-	autonomousConeIn20Pt(true, false, false, false, true); return;
+	autonomousConeIn20Pt(true, true, false, false, true); return;
 	if (left) {
 		switch (autonChoice){
 			case 1: autonomousConeIn20Pt(false, false, false, false, true); break;

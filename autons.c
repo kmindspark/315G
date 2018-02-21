@@ -69,14 +69,54 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 			wait1Msec(20);
 		}
 		numCones = 3;
-		endAutoStackEarly = true;
+        endAutoStackEarly = true;
 		startTask(autoStack);
 		wait1Msec(200);
 		backwardDistance(127, 300, false);
 	}
 
 	if (stopAfterTime){
-		return;
+		if (!extraCones){
+            return;
+        } else {
+            numCones = 4;
+            endAutoStackEarly = false;
+            backwardDistance(127, 1200);
+            stopTask(autoStack);
+            assignArmMotors(80);
+            turnLeft(127, 45, reverse);
+            assignArmMotors(0);
+            assignFlipFlop(-127);
+            backwardDistance(127, 400);
+            assignFlipFlop(-10);
+            turnRight(127, 45, reverse);
+            assignArmMotors(-80);
+            forwardDistance(127, 200);
+            assignArmMotors(0);
+            assignFlipFlop(0);
+            startTask(autoStack);
+            wait1Msec(600);
+            forwardDistance(127, 245);
+            while (autoStackingInProgress){
+                wait1Msec(20);
+            }
+            numCones = 5;
+            startTask(autoStack);
+            wait1Msec(600);
+            forwardDistance(127, 245);
+            while (autoStackingInProgress){
+                wait1Msec(20);
+            }
+            numCones = 6;
+            startTask(autoStack);
+            wait1Msec(600);
+            forwardDistance(127, 245);
+            while (autoStackingInProgress){
+                wait1Msec(20);
+            }
+            numCones = 7;
+            return;
+        }
 	}
 
 	backward(127,2350);
