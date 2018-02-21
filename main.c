@@ -44,7 +44,7 @@ int goalDriveValue;
 int autonAngleBrake = 0;
 int goalDriveAngle;
 
-int skills = 1;
+int skills = 0;
 
 #include "autons.c"
 
@@ -101,8 +101,8 @@ task drive(){
 			turn = filter(vexRT[Ch1]) * (1 - skills*0.5);
 		}
 		else{
-			forward = filter(vexRT[Ch3] + vexRT[Ch3Xmtr2]/2);
-			turn = filter(vexRT[Ch1] + vexRT[Ch1Xmtr2]/2) * (1 - skills*0.5);
+			forward = filter(vexRT[Ch3] + vexRT[Ch3Xmtr2]*0.56);
+			turn = filter(vexRT[Ch1] + vexRT[Ch1Xmtr2]*0.65) * (1 - skills*0.5);
 		}
 
 		goalDrivePowerL = forward + turn;
@@ -149,9 +149,11 @@ task arm(){
 			assignArmMotors(-127);
 			while(vexRT[Btn6D] == 1)
 			{
-
+				if (SensorValue[potArm] < BOTTOMARMPOS + 400){
+					assignArmMotors(-100);
+				}
 			}
-			assignArmMotors(0);
+			assignArmMotors(-10);
 		}
 		if (vexRT[Btn7R] == 1){
 			stopTask(maintainArmPos);
@@ -186,7 +188,7 @@ task mogo(){
 			{
 
 			}
-			assignMogoMotors(0);
+			assignMogoMotors(-10);
 		}
 		if (skills == 1){
 			if (vexRT[Btn6U]){
@@ -216,7 +218,7 @@ task flipfloptask {
 			while (vexRT[Btn5D]){
 
 			}
-			motor[flipflop] = -5;
+			motor[flipflop] = -10;
 		}
 	}
 }
@@ -224,14 +226,12 @@ task flipfloptask {
 task clawtask {
 	while (true) {
 		if (vexRT[Btn7U] == 1){
-			clawOpen = false;
 			while (vexRT[Btn7U] == 1){
 				motor[claw] = 127;
 			}
-			motor[claw] = 25;
+			motor[claw] = 35;
 		}
 		if (vexRT[Btn7D] == 1){
-			clawOpen = true;
 			while (vexRT[Btn7D] == 1){
 				motor[claw] = -127;
 			}
@@ -324,30 +324,34 @@ void pre_auton(){
 
 task autonomous()
 {
+	autonomousConeIn20Pt(true, false, false, false, true); return;
 	if (left) {
 		switch (autonChoice){
-			case 1: autonomousConeIn20Pt(false, false, false, false); break;
-			case 2: autonomousConeIn20Pt(false, false, true, false); break;
-			case 3: autonomousConeIn20Pt(false, true, false, false); break;
-			case 4: autonomousConeIn20Pt(false, false, true, true); break;
-			case 5: autonomousStationary(false); break;
-			case 6: autonDefense(); break;
+			case 1: autonomousConeIn20Pt(false, false, false, false, true); break;
+			case 2: autonomousConeIn20Pt(false, true, false, false, false); break;
+			case 3: autonomousConeIn20Pt(false, false, true, false, false); break;
+			case 4: autonomousConeIn20Pt(false, false, true, true, false); break;
+			case 5: autonomousConeIn20Pt(false, false, false, false, false); break;
+			case 6: autonomousStationary(false); break;
+			case 7: autonDefense(); break;
 			default: break;
 		}
 	} else {
 		switch (autonChoice){
-			case 1: autonomousConeIn20Pt(true, false, false, false); break;
-			case 2: autonomousConeIn20Pt(true, false, true, false); break;
-			case 3: autonomousConeIn20Pt(true, true, false, false); break;
-			case 4: autonomousConeIn20Pt(true, false, true, true); break;
-			case 5: autonomousStationary(true); break;
-			case 6: autonDefense(); break;
+			case 1: autonomousConeIn20Pt(true, false, false, false, true); break;
+			case 2: autonomousConeIn20Pt(true, true, false, false, false); break;
+			case 3: autonomousConeIn20Pt(true, false, true, false, false); break;
+			case 4: autonomousConeIn20Pt(true, false, true, true, false); break;
+			case 5: autonomousConeIn20Pt(true, false, false, false, false); break;
+			case 6: autonomousStationary(true); break;
+			case 7: autonDefense(); break;
 			default: break;
 		}
 	}
 }
 
 task usercontrol(){
+	endAutoStackEarly = false;
 	/*forwardDistance(127, 200);
 	wait1Msec(3000);
 	turnRight(127, 90, false);*/

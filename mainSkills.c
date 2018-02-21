@@ -94,12 +94,12 @@ task drive(){
 	int motor3;
 	int motor4;
 	while (true){
-		int left = filter(vexRT[Ch3]);
-		int right = filter(vexRT[Ch2]);
-		motor[df] = left;
-		motor[db] = left;
-		motor[pf] = right;
-		motor[pb] = right;
+		int forward = filter(vexRT[Ch3]);
+		int turn = filter(vexRT[Ch1]);
+		motor[df] = forward + turn;
+		motor[db] = forward + turn;
+		motor[pf] = forward - turn;
+		motor[pb] = forward - turn;
 
 		if (vexRT[Btn8L]){
 			brake = !brake;
@@ -157,7 +157,7 @@ task arm(){
 
 task mogo(){
 	while(true){
-		if(vexRT[Btn6D]){
+		if(vexRT[Btn6U]){
 			assignMogoMotors(127);
 			while(vexRT[Btn6U])
 			{
