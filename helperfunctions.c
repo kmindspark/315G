@@ -5,7 +5,7 @@
 #define STATIONARYARMPOS 1250
 #define KP_WHEELS_FORWARD 0.8 //TODO: experiment with scaling power polynomially (perhaps quadratically) instead of linearly when braking
 #define KP_WHEELS_ANGLE 0.06
-#define KP_WHEELS_LOCK_ANGLE 1.5
+#define KP_WHEELS_LOCK_ANGLE 1.2
 #define KP_ARM 0.05
 #define KP_CORRECTDRIVE 0.8
 
@@ -57,6 +57,12 @@ task brakeWheels(){
 	int forwardPower;
 	int turnPower;
 	int kTurn;
+    if (!skills){
+			kTurn = KP_WHEELS_LOCK_ANGLE;
+	} else {
+			kTurn = KP_WHEELS_ANGLE;
+	}
+
 	clearTimer(T4);
 	while (true){
 		encoderValue = (SensorValue[leftEncoder] - SensorValue[rightEncoder])/2; //Signing correct
@@ -66,12 +72,8 @@ task brakeWheels(){
 		forwardPower = (goalDriveValue - encoderValue)*currentKPForward - autonForwardBrake*10;//15
 
 		gyroValue = SensorValue[gyro];
-		if (brake){
-			kTurn = KP_WHEELS_LOCK_ANGLE;
-			} else {
-			kTurn = KP_WHEELS_ANGLE;
-		}
-		turnPower = (goalDriveAngle - gyroValue)/**(2000-time1[T4])/2000*/ * KP_WHEELS_ANGLE - autonAngleBrake*10;
+		
+		turnPower = (goalDriveAngle - gyroValue)/**(2000-time1[T4])/2000*/ * kTurn - autonAngleBrake*10;
 		assignDriveMotors(forwardPower + turnPower, forwardPower - turnPower);
 	}
 }
