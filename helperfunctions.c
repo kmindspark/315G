@@ -3,7 +3,7 @@
 #define BOTTOMARMPOS 1575
 #define LOADERARMPOS 2100
 #define STATIONARYARMPOS 1250
-#define KP_WHEELS_FORWARD 0.8 //TODO: experiment with scaling power polynomially (perhaps quadratically) instead of linearly when braking
+#define KP_WHEELS_FORWARD 1.1 //0.8 //TODO: experiment with scaling power polynomially (perhaps quadratically) instead of linearly when braking
 #define KP_WHEELS_ANGLE 0.06
 #define KP_WHEELS_LOCK_ANGLE 1.2
 #define KP_ARM 0.05

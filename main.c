@@ -327,24 +327,28 @@ task autonomous()
 	autonomousConeIn20Pt(true, true, false, false, true); return;
 	if (left) {
 		switch (autonChoice){
-			case 1: autonomousConeIn20Pt(false, false, false, false, true); break;
-			case 2: autonomousConeIn20Pt(false, true, false, false, false); break;
-			case 3: autonomousConeIn20Pt(false, false, true, false, false); break;
-			case 4: autonomousConeIn20Pt(false, false, true, true, false); break;
-			case 5: autonomousConeIn20Pt(false, false, false, false, false); break;
-			case 6: autonomousStationary(false); break;
-			case 7: autonDefense(); break;
+			case 1: autonomousConeIn20Pt(false, false, false, false, 3); break;
+			case 2: autonomousConeIn20Pt(false, false, false, false, 1); break;
+			case 3: autonomousConeIn20Pt(false, false, false, false, 0); break;
+			case 4: autonomousConeIn20Pt(false, false, true, false, 3); break;
+			case 5: autonomousConeIn20Pt(false, false, true, false, 1); break;
+            case 6: autonomousConeIn20Pt(false, false, true, false, 0); break;
+            case 7: autonomousConeIn20Pt(false, true, false, false, 3); break;
+			case 8: autonomousStationary(false, true); break;
+			case 9: autonDefense(); break;
 			default: break;
 		}
 	} else {
 		switch (autonChoice){
-			case 1: autonomousConeIn20Pt(true, false, false, false, true); break;
-			case 2: autonomousConeIn20Pt(true, true, false, false, false); break;
-			case 3: autonomousConeIn20Pt(true, false, true, false, false); break;
-			case 4: autonomousConeIn20Pt(true, false, true, true, false); break;
-			case 5: autonomousConeIn20Pt(true, false, false, false, false); break;
-			case 6: autonomousStationary(true); break;
-			case 7: autonDefense(); break;
+			case 1: autonomousConeIn20Pt(true, false, false, false, 3); break;
+			case 2: autonomousConeIn20Pt(true, false, false, false, 1); break;
+			case 3: autonomousConeIn20Pt(true, false, false, false, 0); break;
+			case 4: autonomousConeIn20Pt(true, false, true, false, 3); break;
+			case 5: autonomousConeIn20Pt(true, false, true, false, 1); break;
+            case 6: autonomousConeIn20Pt(true, false, true, false, 0); break;
+            case 7: autonomousConeIn20Pt(true, true, false, false, 3); break;
+			case 8: autonomousStationary(true, true); break;
+			case 9: autonDefense(); break;
 			default: break;
 		}
 	}
