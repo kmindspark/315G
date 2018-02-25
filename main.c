@@ -102,7 +102,7 @@ task drive(){
 		}
 		else{
 			forward = filter(vexRT[Ch3] + vexRT[Ch3Xmtr2]*0.56);
-			turn = filter(vexRT[Ch1] + vexRT[Ch1Xmtr2]*0.65) * (1 - skills*0.5);
+			turn = filter(vexRT[Ch1] + vexRT[Ch1Xmtr2]*0.45) * (1 - skills*0.5);
 		}
 
 		goalDrivePowerL = forward + turn;
@@ -125,7 +125,7 @@ task drive(){
 				goalDriveValue = 0;
 				goalDriveAngle = 0;
 				startTask(brakeWheels);
-			} else {
+				} else {
 				stopTask(brakeWheels);
 			}
 			wait1Msec(200);
@@ -153,7 +153,7 @@ task arm(){
 					assignArmMotors(-100);
 				}
 			}
-			assignArmMotors(-10);
+			assignArmMotors(-15);
 		}
 		if (vexRT[Btn7R] == 1){
 			stopTask(maintainArmPos);
@@ -324,32 +324,31 @@ void pre_auton(){
 
 task autonomous()
 {
-	autonomousConeIn20Pt(true, true, false, false, true); return;
 	if (left) {
 		switch (autonChoice){
-			case 1: autonomousConeIn20Pt(false, false, false, false, 3); break;
-			case 2: autonomousConeIn20Pt(false, false, false, false, 1); break;
-			case 3: autonomousConeIn20Pt(false, false, false, false, 0); break;
-			case 4: autonomousConeIn20Pt(false, false, true, false, 3); break;
-			case 5: autonomousConeIn20Pt(false, false, true, false, 1); break;
-            case 6: autonomousConeIn20Pt(false, false, true, false, 0); break;
-            case 7: autonomousConeIn20Pt(false, true, false, false, 3); break;
-			case 8: autonomousStationary(false, true); break;
-			case 9: autonDefense(); break;
-			default: break;
+		case 1: autonomousConeIn20Pt(false, false, false, false, 3); break;
+		case 2: autonomousConeIn20Pt(false, false, false, false, 1); break;
+		case 3: autonomousConeIn20Pt(false, false, false, false, 0); break;
+		case 4: autonomousConeIn20Pt(false, false, true, false, 3); break;
+		case 5: autonomousConeIn20Pt(false, false, true, false, 1); break;
+		case 6: autonomousConeIn20Pt(false, false, true, false, 0); break;
+		case 7: autonomousConeIn20Pt(false, true, false, false, 3); break;
+		case 8: autonomousStationary(false, true); break;
+		case 9: autonDefense(); break;
+		default: break;
 		}
-	} else {
+		} else {
 		switch (autonChoice){
-			case 1: autonomousConeIn20Pt(true, false, false, false, 3); break;
-			case 2: autonomousConeIn20Pt(true, false, false, false, 1); break;
-			case 3: autonomousConeIn20Pt(true, false, false, false, 0); break;
-			case 4: autonomousConeIn20Pt(true, false, true, false, 3); break;
-			case 5: autonomousConeIn20Pt(true, false, true, false, 1); break;
-            case 6: autonomousConeIn20Pt(true, false, true, false, 0); break;
-            case 7: autonomousConeIn20Pt(true, true, false, false, 3); break;
-			case 8: autonomousStationary(true, true); break;
-			case 9: autonDefense(); break;
-			default: break;
+		case 1: autonomousConeIn20Pt(true, false, false, false, 3); break;
+		case 2: autonomousConeIn20Pt(true, false, false, false, 1); break;
+		case 3: autonomousConeIn20Pt(true, false, false, false, 0); break;
+		case 4: autonomousConeIn20Pt(true, false, true, false, 3); break;
+		case 5: autonomousConeIn20Pt(true, false, true, false, 1); break;
+		case 6: autonomousConeIn20Pt(true, false, true, false, 0); break;
+		case 7: autonomousConeIn20Pt(true, true, false, false, 3); break;
+		case 8: autonomousStationary(true, true); break;
+		case 9: autonDefense(); break;
+		default: break;
 		}
 	}
 }
