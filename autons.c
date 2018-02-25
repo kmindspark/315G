@@ -35,12 +35,12 @@ void autonomousStationary(bool reverse, bool extraCones){
 	assignMogoMotors(-10);
 
 	if (extraCones){
-		forwardDistance(127, 1000);
+		forwardDistance(127, 1000, true, false);
 		assignMogoMotors(127);
 		wait1Msec(300);
 		assignArmMotors(-127);
 		wait1Msec(100);
-		forwardDistance(127, 100);
+		forwardDistance(127, true, false);
 		assignArmMotors(0);
 		assignMogoMotors(10);
 		wait1Msec(200);
@@ -74,10 +74,10 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 	motor[claw] = 20; //Drive forward to pick up mobile goal and score the cone on it
 	assignArmMotors(45);
 	assignMogoMotors(-127);
-	forward(127,1400);
+	forwardDistance(127, 910);
 	assignArmMotors(10);
 	assignMogoMotors(-10);
-	forward(120,600);
+	forwardDistance(120, 1300, true, false);
 	assignMogoMotors(127);
 	wait1Msec(750);
 	assignArmMotors(-127);
@@ -92,14 +92,14 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 		assignFlipFlop(-127);
 		wait1Msec(100);
 		assignArmMotors(-50);
-		forwardDistance(127, 270); //240
+		forwardDistance(127, 1570, true, false); //240
 		assignArmMotors(-10);
 		assignFlipFlop(0);
 		numCones = 1;
 		startTask(autoStack);
 		wait1Msec(600);
 		if (extraCones > 1){
-			forwardDistance(127, 290);
+			forwardDistance(127, 1860, true, false);
 			while (autoStackingInProgress){
 				wait1Msec(20);
 			}
@@ -107,7 +107,7 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 			wait1Msec(200);
 			startTask(autoStack);
 			wait1Msec(600);
-			forwardDistance(127, 245); //245
+			forwardDistance(127, 2105, true, false); //245
 			while (autoStackingInProgress){
 				wait1Msec(20);
 			}
@@ -124,11 +124,11 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 			}
 		}
 		else {
-			backwardDistance(127, 1800);
+			backwardDistance(127, 1700);
 		}
 	}
 	else {
-		backwardDistance(127, 1300);
+		backwardDistance(127, 1200);
 	}
 
 	if (stopAfterTime){

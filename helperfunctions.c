@@ -80,10 +80,12 @@ task brakeWheels(){
 
 
 
-void forwardDistance(int power, int distance, bool brake){
+void forwardDistance(int power, int distance, bool brake, bool clear){
 	clearTimer(T2);
-	SensorValue[leftEncoder] = 0;
-	SensorValue[rightEncoder] = 0;
+    if (clear){
+        SensorValue[leftEncoder] = 0;
+    	SensorValue[rightEncoder] = 0;
+    }
 	assignDriveMotors(power, power);
 	int difference;
 	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 50 && time1[T2] < distance + 2000){
@@ -112,10 +114,12 @@ void forwardDistance(int power, int distance, bool brake){
 	assignDriveMotors(0, 0);
 }
 
-void backwardDistance(int power, int distance, bool brake){
+void backwardDistance(int power, int distance, bool brake, bool clear){
 	clearTimer(T2);
-	SensorValue[leftEncoder] = 0;
-	SensorValue[rightEncoder] = 0;
+	if (clear){
+        SensorValue[leftEncoder] = 0;
+    	SensorValue[rightEncoder] = 0;
+    }
 	assignDriveMotors(-power, -power);
 	int difference;
 	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 50 && time1[T2] < distance + 2000){
@@ -144,12 +148,20 @@ void backwardDistance(int power, int distance, bool brake){
 	assignDriveMotors(0, 0);
 }
 
+void forwardDistance(int power, int distance, bool brake){
+	forwardDistance(power, distance, brake, true);
+}
+
+void backwardDistance(int power, int distance, bool brake){
+	backwardDistance(power, distance, brake, true);
+}
+
 void forwardDistance(int power, int distance){
-	forwardDistance(power, distance, true);
+	forwardDistance(power, distance, true, true);
 }
 
 void backwardDistance(int power, int distance){
-	backwardDistance(power, distance, true);
+	backwardDistance(power, distance, true, true);
 }
 
 void forwardTime(int power, int time){
@@ -178,7 +190,7 @@ void backward(int power, int time)
 	return;
 }
 
-void turnRight(int power, int degrees, bool reverse)
+void turnRight(int power, int degrees, bool reverse, bool clear)
 {
 	if (reverse)
 	{
@@ -187,15 +199,18 @@ void turnRight(int power, int degrees, bool reverse)
 	}
 	SensorValue[leftEncoder] = 0;
 	SensorValue[rightEncoder] = 0;
-	SensorValue[gyro] = 0;
-	wait1Msec(50);
+    if (clear){
+        SensorValue[gyro] = 0;
+    }
+	//wait1Msec(50);
 	assignDriveMotors(power,-power);
 	degrees = degrees*10;
-	int compensation = 250;
-	if (degrees <= 900){
-		compensation = degrees*5/18;
-	}
+
 	if (skills == 1){
+        int compensation = 250;
+        if (degrees <= 900){
+            compensation = degrees*5/18;
+        }
 		while (abs(SensorValue[gyro]) < degrees - compensation /*- 250*/){
 
 		}
@@ -218,7 +233,7 @@ void turnRight(int power, int degrees, bool reverse)
 	}
 }
 
-void turnLeft(int power, int degrees, bool reverse)
+void turnLeft(int power, int degrees, bool reverse, bool clear)
 {
 	if (reverse)
 	{
@@ -227,15 +242,18 @@ void turnLeft(int power, int degrees, bool reverse)
 	}
 	SensorValue[leftEncoder] = 0;
 	SensorValue[rightEncoder] = 0;
-	SensorValue[gyro] = 0;
-	wait1Msec(50);
+	if (clear){
+        SensorValue[gyro] = 0;
+    }
+	//wait1Msec(50);
 	assignDriveMotors(-power,power);
 	degrees = degrees*10;
-	int compensation = 300;
-	if (degrees <= 900){
-		compensation = degrees/3;
-	}
+	
 	if (skills == 1){
+        int compensation = 250;
+        if (degrees <= 900){
+            compensation = degrees*5/18;
+        }
 		while (abs(SensorValue[gyro]) < degrees - compensation /*- 250*/){
 
 		}
@@ -256,6 +274,14 @@ void turnLeft(int power, int degrees, bool reverse)
 		wait1Msec(150);
 		assignDriveMotors(0, 0);
 	}
+}
+
+void turnLeft(int power, int degrees, bool reverse){
+    turnLeft(power, degrees, reverse, true);
+}
+
+void turnRight(int power, int degrees, bool reverse){
+    turnRight(power, degrees, reverse, true);
 }
 
 void assignFlipFlop(int power)
