@@ -17,8 +17,8 @@ bool endAutoStackEarly = false;
 
 int positions[13]={1620, 1800, 1830, 1920, 2200, 2390, 2510, 2640, 2770, 2900, 3030, 3160, 3260};
 
-void turnLeft(int power, int degrees, bool reverse);
-void turnRight(int power, int degrees, bool reverse);
+void turnLeft(int power, int degrees, bool reverse, bool clear);
+void turnRight(int power, int degrees, bool reverse, bool clear);
 
 int encoderAverage(int one, int two){
 	return (abs(one) + abs(two))/2;
@@ -194,7 +194,7 @@ void turnRight(int power, int degrees, bool reverse, bool clear)
 {
 	if (reverse)
 	{
-		turnLeft(power,degrees,false);
+		turnLeft(power,degrees,false, clear);
 		return;
 	}
 	SensorValue[leftEncoder] = 0;
@@ -226,7 +226,7 @@ void turnRight(int power, int degrees, bool reverse, bool clear)
 		currentKPForward = KP_WHEELS_FORWARD;
 	}
 	else {
-		while (abs(SensorValue[gyro]) < degrees){}
+		while (abs(SensorValue[gyro]) < degrees - 80){}
 		assignDriveMotors(-87, 87);
 		wait1Msec(150);
 		assignDriveMotors(0, 0);
@@ -237,18 +237,18 @@ void turnLeft(int power, int degrees, bool reverse, bool clear)
 {
 	if (reverse)
 	{
-		turnRight(power,degrees,false);
+		turnRight(power,degrees,false, clear);
 		return;
 	}
 	SensorValue[leftEncoder] = 0;
 	SensorValue[rightEncoder] = 0;
 	if (clear){
-        SensorValue[gyro] = 0;
-    }
+       SensorValue[gyro] = 0;
+  }
 	//wait1Msec(50);
 	assignDriveMotors(-power,power);
 	degrees = degrees*10;
-	
+
 	if (skills == 1){
         int compensation = 250;
         if (degrees <= 900){
@@ -269,7 +269,7 @@ void turnLeft(int power, int degrees, bool reverse, bool clear)
 		currentKPForward = KP_WHEELS_FORWARD;
 	}
 	else {
-		while (abs(SensorValue[gyro]) < degrees){}
+		while (abs(SensorValue[gyro]) < degrees - 80){}
 		assignDriveMotors(87, -87);
 		wait1Msec(150);
 		assignDriveMotors(0, 0);
@@ -319,9 +319,9 @@ task autoStack(){
 		wait1Msec(1000);
 	}
 	assignArmMotors(-120);
-	wait1Msec(130);
-	assignArmMotors(10);
-	wait1Msec(20);
+	wait1Msec(150);
+	assignArmMotors(20);
+	wait1Msec(0);
 	openClaw();
 
 	if (endAutoStackEarly){
@@ -331,8 +331,8 @@ task autoStack(){
 	goalPos = SensorValue[potArm];
 	assignArmMotors(100);
 	clearTimer(T4);
-	while(SensorValue[potArm] < goalPos + 151){
-		if (time1[T4] > 150){
+	while(SensorValue[potArm] < goalPos + 155){
+		if (time1[T4] > 120){
 			assignFlipFlop(-127);
 		}
 	}

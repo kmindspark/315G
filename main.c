@@ -45,6 +45,7 @@ int autonAngleBrake = 0;
 int goalDriveAngle;
 
 int skills = 0;
+int song = 3;
 
 #include "autons.c"
 
@@ -180,7 +181,7 @@ task mogo(){
 			{
 
 			}
-			assignMogoMotors(10);
+			assignMogoMotors(15);
 		}
 		if(vexRT[Btn8D]){
 			assignMogoMotors(-127);
@@ -211,7 +212,7 @@ task flipfloptask {
 			motor[flipflop] = 127;
 			while (vexRT[Btn5U]){
 			}
-			motor[flipflop] = 0;
+			motor[flipflop] = 5;
 		}
 		if (vexRT[Btn5D]){
 			motor[flipflop] = -127;
@@ -251,6 +252,21 @@ task coneCounter(){
 		if (vexRT[Btn8RXmtr2]){
 			numCones++;
 		}
+	}
+}
+
+
+task playMusic{
+	switch (song){
+		case 1:
+			PlaySoundFile("1.wav");
+		case 2:
+			PlaySoundFile("2.wav");
+		case 3:
+			PlaySoundFile("3.wav");
+	}
+	while(true){
+		wait1Msec(20);
 	}
 }
 
@@ -311,21 +327,39 @@ void pre_auton(){
 			chosen = true;
 		}
 	}
+
 	clearLCDLine(0);
 	clearLCDLine(1);
-	if (left){
-		displayLCDCenteredString(0, "left");
+
+	displayLCDCenteredString(0, "Choose song");
+
+	chosen = false;
+	while (!chosen && vexCompetitionState == competitionState){
+		waitForPress();
+		if (nLCDButtons == LEFTBUTTON){
+			waitForRelease();
+			chosen = true;
+			song = 1;
+		}
+		else if (nLCDButtons == CENTERBUTTON){
+			waitForRelease();
+			chosen = true;
+			song = 2;
+		}
+		else if (nLCDButtons == RIGHTBUTTON){
+			waitForRelease();
+			chosen = true;
+			song = 3;
+		}
 	}
-	else {
-		displayLCDCenteredString(0, "right");
-	}
-	displayLCDCenteredString(1, autons[autonChoice]);
+
+	startTask(playMusic);
 }
+
 
 task autonomous()
 {
-    turnRight(127, 155, true);
-    return;
+	autonomousStationary(true, true); return;
 	if (left) {
 		switch (autonChoice){
 		case 1: autonomousConeIn20Pt(false, false, false, false, 3); break;
@@ -356,6 +390,7 @@ task autonomous()
 }
 
 task usercontrol(){
+	stopTask(playMusic);
 	endAutoStackEarly = false;
 	/*forwardDistance(127, 200);
 	wait1Msec(3000);
