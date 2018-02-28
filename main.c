@@ -257,21 +257,25 @@ task coneCounter(){
 
 
 task playMusic{
-	switch (song){
-		case 1:
-			PlaySoundFile("1.wav");
-		case 2:
-			PlaySoundFile("2.wav");
-		case 3:
-			PlaySoundFile("3.wav");
-	}
-	while(true){
-		wait1Msec(20);
-	}
+    while (true){
+        switch (song){
+            case 1:
+                PlaySoundFile("1new.wav");
+            case 2:
+                PlaySoundFile("2new.wav");
+            case 3:
+                PlaySoundFile("3new.wav");
+	    }
+        while (bMusicPlaying){
+            wait1Msec(100);
+        }
+    }
 }
 
 void pre_auton(){
 	bLCDBacklight = true;
+    bPlaySounds = true;
+    nVolume = 4;
 	displayLCDCenteredString(0, "Init. gyro");
 	SensorType[gyro] = sensorNone;
 	wait1Msec(2000);
