@@ -1,6 +1,6 @@
 #include "helperfunctions.c"
 
-string autons[10] = {"No Auton", "4 in 20", "2 in 20", "1 in 20", "4 in 5", "2 in 5", "1 in 5", "Stackalot", "Stat + 2 in 5", "iM a DeFeNsE bOt"};
+string autons[11] = {"No Auton", "4 in 20", "2 in 20", "1 in 20", "4 in 5", "2 in 5", "1 in 5", "Stackalot", "Stat + 2 in 5", "Stat + Def", "iM a DeFeNsE bOt"};
 
 void autonomousStationary(bool reverse, bool extraCones){
 	motor[claw] = 35;
@@ -11,65 +11,94 @@ void autonomousStationary(bool reverse, bool extraCones){
 	assignArmMotors(80);
 	assignFlipFlop(-127);
 	forwardDistance(127, 490, false, true);
-	forwardTime(30, 200);
+	assignDriveMotors(10, 10);
 	assignArmMotors(0);
 	while (SensorValue[potArm] < STATIONARYARMPOS){
 
 	}
-	assignFlipFlop(-10);
+	assignFlipFlop(-20);
 	assignMogoMotors(-10);
-	assignArmMotors(-60);
-	wait1Msec(300);
+	assignArmMotors(-40);
+	wait1Msec(500);
 	assignArmMotors(0);
-	wait1msec(300);
+	wait1Msec(300);
 	openClaw();
 	wait1Msec(200);
 
+	assignArmMotors(50);
+	wait1Msec(200);
 	assignFlipFlop(127);
 	wait1Msec(400);
 	assignFlipFlop(0);
-	assignArmMotors(-20);
+	assignArmMotors(0);
 
-	backwardDistance(127, 440);
-	wait1Msec(200);
-
-	turnLeft(127, 95, reverse);
+	assignArmMotors(-70);
+	wait1Msec(450);
+	assignArmMotors(0);
 
 	if (extraCones){
-		forwardDistance(127, 1340);
-		forwardDistance(50, 1390, false, false);
+		backwardDistance(127, 435);
+		assignArmMotors(0);
+
+		wait1Msec(500);
+		turnLeft(90, 90, reverse);
+		wait1Msec(200);
+		forwardDistance(127, 1300);
+		forwardDistance(50, 1350, false, false);
 		assignMogoMotors(127);
 		assignArmMotors(70);
 		wait1Msec(300);
 		assignFlipFlop(-127);
+		assignArmMotors(0);
 		wait1Msec(100);
-		forwardDistance(127, 1610, true, false);
+		forwardDistance(127, 1540, true, false);
+		wait1Msec(600);
 		assignMogoMotors(10);
 		assignArmMotors(-80);
 		assignFlipFlop(-10);
 		openClaw();
 		wait1Msec(200);
-		assignArmMotors(0);
+		assignArmMotors(-10);
+		assignFlipFlop(-10);
 		numCones = 0;
 		startTask(autoStack);
 		wait1Msec(400);
-		forwardDistance(127, 240);
+		forwardDistance(127, 1760, true, false);
 		while (autoStackingInProgress){
 			wait1Msec(20);
 		}
+		stopTask(autoStack);
 		numCones = 1;
-		wait1Msec(100);
+		wait1Msec(200);
+		endAutoStackEarly = true;
 		startTask(autoStack);
 		wait1Msec(200);
-		backwardDistance(127, 700);
-		turnRight(127, 180, reverse);
+		backwardDistance(127, 1400);
+		turnLeft(127, 180, reverse);
 		assignArmMotors(60);
+		assignFlipFlop(127);
 		wait1Msec(300);
 		assignArmMotors(10);
 		assignMogoMotors(-127);
+		assignFlipFlop(10);
 		wait1Msec(1000);
 		assignMogoMotors(0);
-		backward(127,1000);
+		backward(127,400);
+	}
+	else {
+		backwardDistance(127, 200);
+		turnLeft(127, 78, reverse);
+		forwardTime(127, 2100);
+		backwardDistance(127, 200);
+		turnRight(127, 105, reverse);
+		forwardDistance(127, 500);
+		forwardDistance(50, 100, false, true);
+		assignArmMotors(50);
+		assignMogoMotors(127);
+		wait1Msec(300);
+		assignArmMotors(0);
+		wait1Msec(800);
+		assignMogoMotors(0);
 	}
 }
 
@@ -78,17 +107,17 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 	endAutoStackEarly = false;
 	clearTimer(T1);
 	motor[claw] = 20; //Drive forward to pick up mobile goal and score the cone on it
-	assignArmMotors(35);
+	assignArmMotors(45);
 	assignMogoMotors(-127);
 	forwardDistance(127, 1210, false);
 	assignArmMotors(10);
 	assignMogoMotors(-10);
-	forwardDistance(50, 1340, false, false);
+	forwardDistance(80, 1340, false, false);
 	assignMogoMotors(127);
 	wait1Msec(750);
 	assignArmMotors(-127);
 	wait1Msec(200);
-	assignMogoMotors(20);
+	assignMogoMotors(30);
 	assignArmMotors(0);
 	wait1Msec(200);
 	openClaw(); //At this point the one cone is scored
@@ -97,16 +126,16 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 		assignFlipFlop(-127);
 		forwardDistance(127, 1540, true, false); //240
 		assignArmMotors(-127);
-		wait1Msec(300);
+		wait1Msec(350);
 		assignArmMotors(0);
 		assignFlipFlop(0);
 		numCones = 1;
 		assignArmMotors(-10);
-		wait1Msec(100);
+		wait1Msec(50);
 		startTask(autoStack);
 		wait1Msec(400);
 		if (extraCones > 1){
-			forwardDistance(127, 1810, true, false);
+			forwardDistance(127, 1820, true, false);//18010
 			while (autoStackingInProgress){
 				wait1Msec(20);
 			}
@@ -131,7 +160,7 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 			}
 		}
 		else {
-			backwardDistance(127, 1700);
+			backwardDistance(127, 1600);
 		}
 	}
 	else {
@@ -202,7 +231,7 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 		turnLeft(127,45,reverse);
 	}
 
-	backwardDistance(127, 640); //Navigate to the 20 point zone
+	backwardDistance(127, 655); //640 //Navigate to the 20 point zone
 	turnLeft(127,90,reverse);
 	assignArmMotors(60);
 	forwardTime(127, 800);

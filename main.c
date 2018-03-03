@@ -260,22 +260,23 @@ task playMusic{
     while (true){
         switch (song){
             case 1:
-                PlaySoundFile("1new.wav");
+                playSoundFile("life_1.wav");
+                break;
             case 2:
-                PlaySoundFile("2new.wav");
+                playSoundFile("stars_4.wav");
+                break;
             case 3:
-                PlaySoundFile("3new.wav");
+                playSoundFile("sandstorm_3.wav");
+                break;
 	    }
-        while (bMusicPlaying){
-            wait1Msec(100);
-        }
+	    wait1Msec(3000);
     }
 }
 
 void pre_auton(){
 	bLCDBacklight = true;
-    bPlaySounds = true;
-    nVolume = 4;
+  //bPlaySounds = true;
+  //nVolume = 4;
 	displayLCDCenteredString(0, "Init. gyro");
 	SensorType[gyro] = sensorNone;
 	wait1Msec(2000);
@@ -288,6 +289,7 @@ void pre_auton(){
 	displayLCDCenteredString(0, autons[autonChoice]);
 	clearTimer(T1);
 	if (nLCDButtons != LEFTBUTTON){
+		startTask(playMusic);
 		return;
 	}
 	while (!chosen && vexCompetitionState == competitionState){
@@ -335,8 +337,9 @@ void pre_auton(){
 	clearLCDLine(0);
 	clearLCDLine(1);
 
-	displayLCDCenteredString(0, "Choose song");
+	wait1Msec(500);
 
+	displayLCDCenteredString(0, "Choose song");
 	chosen = false;
 	while (!chosen && vexCompetitionState == competitionState){
 		waitForPress();
@@ -363,38 +366,24 @@ void pre_auton(){
 
 task autonomous()
 {
-	autonomousStationary(true, true); return;
-	if (left) {
 		switch (autonChoice){
-		case 1: autonomousConeIn20Pt(false, false, false, false, 3); break;
-		case 2: autonomousConeIn20Pt(false, false, false, false, 1); break;
-		case 3: autonomousConeIn20Pt(false, false, false, false, 0); break;
-		case 4: autonomousConeIn20Pt(false, false, true, false, 3); break;
-		case 5: autonomousConeIn20Pt(false, false, true, false, 1); break;
-		case 6: autonomousConeIn20Pt(false, false, true, false, 0); break;
-		case 7: autonomousConeIn20Pt(false, true, false, false, 3); break;
-		case 8: autonomousStationary(false, true); break;
-		case 9: autonDefense(); break;
+		case 1: autonomousConeIn20Pt(!left, false, false, false, 3); break;
+		case 2: autonomousConeIn20Pt(!left, false, false, false, 1); break;
+		case 3: autonomousConeIn20Pt(!left, false, false, false, 0); break;
+		case 4: autonomousConeIn20Pt(!left, false, true, false, 3); break;
+		case 5: autonomousConeIn20Pt(!left, false, true, false, 1); break;
+		case 6: autonomousConeIn20Pt(!left, false, true, false, 0); break;
+		case 7: autonomousConeIn20Pt(!left, true, false, false, 3); break;
+		case 8: autonomousStationary(!left, true); break;
+		case 9: autonomousStationary(!left, false); break;
+		case 10: autonDefense(); break;
 		default: break;
-		}
-		} else {
-		switch (autonChoice){
-		case 1: autonomousConeIn20Pt(true, false, false, false, 3); break;
-		case 2: autonomousConeIn20Pt(true, false, false, false, 1); break;
-		case 3: autonomousConeIn20Pt(true, false, false, false, 0); break;
-		case 4: autonomousConeIn20Pt(true, false, true, false, 3); break;
-		case 5: autonomousConeIn20Pt(true, false, true, false, 1); break;
-		case 6: autonomousConeIn20Pt(true, false, true, false, 0); break;
-		case 7: autonomousConeIn20Pt(true, true, false, false, 3); break;
-		case 8: autonomousStationary(true, true); break;
-		case 9: autonDefense(); break;
-		default: break;
-		}
 	}
 }
 
 task usercontrol(){
 	stopTask(playMusic);
+	clearSounds();
 	endAutoStackEarly = false;
 	/*forwardDistance(127, 200);
 	wait1Msec(3000);

@@ -15,7 +15,7 @@ int currentDownPos=BOTTOMARMPOS;
 bool autoStackingInProgress;
 bool endAutoStackEarly = false;
 
-int positions[13]={1620, 1800, 1830, 1920, 2200, 2390, 2510, 2640, 2770, 2900, 3030, 3160, 3260};
+int positions[13]={1760, 1800, 1830, 1920, 2200, 2390, 2510, 2640, 2770, 2900, 3030, 3160, 3260};
 
 void turnLeft(int power, int degrees, bool reverse, bool clear);
 void turnRight(int power, int degrees, bool reverse, bool clear);
@@ -343,7 +343,7 @@ task autoStack(){
 	}
 	assignFlipFlop(-80);
 
-	while (SensorValue[potArm] > currentDownPos){
+	while (SensorValue[potArm] > currentDownPos + 50){
 		//wait
 	}
 	assignArmMotors(-10);
