@@ -269,7 +269,7 @@ task playMusic{
                 playSoundFile("sandstorm_3.wav");
                 break;
 	    }
-	    wait1Msec(3000);
+	    wait1Msec(2000);
     }
 }
 

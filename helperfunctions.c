@@ -15,7 +15,7 @@ int currentDownPos=BOTTOMARMPOS;
 bool autoStackingInProgress;
 bool endAutoStackEarly = false;
 
-int positions[13]={1760, 1800, 1830, 1920, 2200, 2390, 2510, 2640, 2770, 2900, 3030, 3160, 3260};
+int positions[13]={1760, 1800, 1830, 2000, 2200, 2390, 2510, 2640, 2770, 2900, 3030, 3160, 3260};
 
 void turnLeft(int power, int degrees, bool reverse, bool clear);
 void turnRight(int power, int degrees, bool reverse, bool clear);
@@ -318,8 +318,8 @@ task autoStack(){
 	if (endAutoStackEarly){
 		wait1Msec(1000);
 	}
-	assignArmMotors(-120);
-	wait1Msec(150);
+	assignArmMotors(-110);
+	wait1Msec(80);
 	assignArmMotors(20);
 	wait1Msec(0);
 	openClaw();

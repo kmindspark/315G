@@ -37,11 +37,11 @@ void autonomousStationary(bool reverse, bool extraCones){
 	assignArmMotors(0);
 
 	if (extraCones){
-		backwardDistance(127, 435);
+		backwardDistance(127, 455);
 		assignArmMotors(0);
 
 		wait1Msec(500);
-		turnLeft(90, 90, reverse);
+		turnLeft(90, 92, reverse);
 		wait1Msec(200);
 		forwardDistance(127, 1300);
 		forwardDistance(50, 1350, false, false);
@@ -124,18 +124,18 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 	if (extraCones > 0){
 		assignArmMotors(20);
 		assignFlipFlop(-127);
-		forwardDistance(127, 1540, true, false); //240
+		forwardDistance(127, 1600, true, false); //240
 		assignArmMotors(-127);
 		wait1Msec(350);
 		assignArmMotors(0);
-		assignFlipFlop(0);
+		assignFlipFlop(-20);
 		numCones = 1;
 		assignArmMotors(-10);
 		wait1Msec(50);
 		startTask(autoStack);
 		wait1Msec(400);
 		if (extraCones > 1){
-			forwardDistance(127, 1820, true, false);//18010
+			forwardDistance(127, 1860, true, false);//1810
 			while (autoStackingInProgress){
 				wait1Msec(20);
 			}
@@ -143,7 +143,7 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 			wait1Msec(200);
 			startTask(autoStack);
 			wait1Msec(600);
-			forwardDistance(127, 1990, true, false); //245
+			forwardDistance(127, 2000, true, false); //1990 //245
 			while (autoStackingInProgress){
 				wait1Msec(20);
 			}
@@ -156,10 +156,11 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 			}
 			else {
 				backwardDistance(127, 300, false);
-				backward(127,2300);
+				backward(127,2360);//2300
 			}
 		}
 		else {
+			endAutoStackEarly = true;
 			backwardDistance(127, 1600);
 		}
 	}
@@ -231,7 +232,7 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 		turnLeft(127,45,reverse);
 	}
 
-	backwardDistance(127, 655); //640 //Navigate to the 20 point zone
+	backwardDistance(127, 670); //655 //640 //Navigate to the 20 point zone
 	turnLeft(127,90,reverse);
 	assignArmMotors(60);
 	forwardTime(127, 800);
