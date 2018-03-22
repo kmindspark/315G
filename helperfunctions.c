@@ -8,14 +8,20 @@
 #define KP_WHEELS_LOCK_ANGLE 1.2
 #define KP_ARM 0.05
 #define KP_CORRECTDRIVE 0.8
+#define EARLYBRAKEDEGREES 80
+#define STRAIGHTBRAKEPOWER 87
+#define ANGLEBRAKEPOWER 87
 
 float currentKPForward = KP_WHEELS_FORWARD;
 
 int currentDownPos=BOTTOMARMPOS;
 bool autoStackingInProgress;
 bool endAutoStackEarly = false;
+int anticipateTurn = EARLYBRAKEDEGREES;
+int angleBrakePower = ANGLEBRAKEPOWER;
+int straightBrakePower = STRAIGHTBRAKEPOWER;
 
-int positions[13]={1760, 1800, 1830, 2000, 2200, 2390, 2510, 2640, 2770, 2900, 3030, 3160, 3260};
+int positions[18]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 void turnLeft(int power, int degrees, bool reverse, bool clear);
 void turnRight(int power, int degrees, bool reverse, bool clear);
@@ -38,17 +44,16 @@ void openClaw()
 	motor[claw] = -20;
 }
 
-
 void assignArmMotors(int power){
-	motor[armL] = power;
-	motor[armR] = power;
+	motor[armL1] = power;
+	motor[armR1] = power;
+    motor[armL2] = power;
+    motor[armR2] = power;
 }
 
 void assignDriveMotors(int lp, int rp){
-	motor[df] = lp;
-	motor[db] = lp;
-	motor[pf] = rp;
-	motor[pb] = rp;
+	motor[dl] = lp;
+	motor[dr] = rp;
 }
 
 task brakeWheels(){
@@ -57,18 +62,12 @@ task brakeWheels(){
 	int forwardPower;
 	int turnPower;
 	int kTurn;
-    if (!skills){
-			kTurn = KP_WHEELS_LOCK_ANGLE;
-	} else {
-			kTurn = KP_WHEELS_ANGLE;
-	}
+    
+    kTurn = KP_WHEELS_LOCK_ANGLE;
 
 	clearTimer(T4);
 	while (true){
 		encoderValue = (SensorValue[leftEncoder] - SensorValue[rightEncoder])/2; //Signing correct
-		if (skills == 1){
-			encoderValue = (-SensorValue[leftEncoder] + SensorValue[rightEncoder])/2; //Signing correct
-		}
 		forwardPower = (goalDriveValue - encoderValue)*currentKPForward - autonForwardBrake*10;//15
 
 		gyroValue = SensorValue[gyro];
@@ -77,8 +76,6 @@ task brakeWheels(){
 		assignDriveMotors(forwardPower + turnPower, forwardPower - turnPower);
 	}
 }
-
-
 
 void forwardDistance(int power, int distance, bool brake, bool clear){
 	clearTimer(T2);
@@ -93,19 +90,8 @@ void forwardDistance(int power, int distance, bool brake, bool clear){
 		assignDriveMotors(power - difference, power + difference);
 	}
 	if (brake){
-		if (skills == 1){
-			goalDriveValue = distance;
-			autonForwardBrake = 1;
-			startTask(brakeWheels);
-			wait1Msec(150);
-			autonForwardBrake = 0;
-			wait1Msec(400);
-			stopTask(brakeWheels);
-		}
-		else{
-			assignDriveMotors(-50, -50);
-			wait1Msec(100);
-		}
+        assignDriveMotors(-straightBrakePower, -straightBrakePower);
+        wait1Msec(100);
 	}
 	else {
 		assignDriveMotors(-10, -10);
@@ -127,19 +113,8 @@ void backwardDistance(int power, int distance, bool brake, bool clear){
 		assignDriveMotors(-power + difference, -power + difference);
 	}
 	if (brake){
-		if (skills == 1){
-			goalDriveValue = distance;
-			autonForwardBrake = -1;
-			startTask(brakeWheels);
-			wait1Msec(150);
-			autonForwardBrake = 0;
-			wait1Msec(400);
-			stopTask(brakeWheels);
-		}
-		else{
-			assignDriveMotors(50, 50);
-			wait1Msec(100);
-		}
+        assignDriveMotors(straightBrakePower, straightBrakePower);
+        wait1Msec(100);
 	}
 	else {
 		assignDriveMotors(-10, -10);
@@ -206,31 +181,10 @@ void turnRight(int power, int degrees, bool reverse, bool clear)
 	assignDriveMotors(power,-power);
 	degrees = degrees*10;
 
-	if (skills == 1){
-        int compensation = 250;
-        if (degrees <= 900){
-            compensation = degrees*5/18;
-        }
-		while (abs(SensorValue[gyro]) < degrees - compensation /*- 250*/){
-
-		}
-		currentKPForward = 0;
-		goalDriveAngle = degrees;
-		goalDriveValue = 0;
-		startTask(brakeWheels);
-		autonAngleBrake = 1;
-		wait1Msec(250);
-		autonAngleBrake = 0;
-		wait1Msec(75);
-		stopTask(brakeWheels);
-		currentKPForward = KP_WHEELS_FORWARD;
-	}
-	else {
-		while (abs(SensorValue[gyro]) < degrees - 80){}
-		assignDriveMotors(-87, 87);
-		wait1Msec(150);
-		assignDriveMotors(0, 0);
-	}
+    while (abs(SensorValue[gyro]) < degrees - anticipateTurn){}
+    assignDriveMotors(-angleBrakePower, angleBrakePower);
+    wait1Msec(150);
+    assignDriveMotors(0, 0);
 }
 
 void turnLeft(int power, int degrees, bool reverse, bool clear)
@@ -249,31 +203,10 @@ void turnLeft(int power, int degrees, bool reverse, bool clear)
 	assignDriveMotors(-power,power);
 	degrees = degrees*10;
 
-	if (skills == 1){
-        int compensation = 250;
-        if (degrees <= 900){
-            compensation = degrees*5/18;
-        }
-		while (abs(SensorValue[gyro]) < degrees - compensation /*- 250*/){
-
-		}
-		currentKPForward = 0;
-		goalDriveAngle = degrees;
-		goalDriveValue = 0;
-		startTask(brakeWheels);
-		autonAngleBrake = -1;
-		wait1Msec(250);
-		autonAngleBrake = 0;
-		wait1Msec(75);
-		stopTask(brakeWheels);
-		currentKPForward = KP_WHEELS_FORWARD;
-	}
-	else {
-		while (abs(SensorValue[gyro]) < degrees - 80){}
-		assignDriveMotors(87, -87);
-		wait1Msec(150);
-		assignDriveMotors(0, 0);
-	}
+    while (abs(SensorValue[gyro]) < degrees - anticipateTurn){}
+    assignDriveMotors(angleBrakePower, -angleBrakePower);
+    wait1Msec(150);
+    assignDriveMotors(0, 0);
 }
 
 void turnLeft(int power, int degrees, bool reverse){
@@ -303,52 +236,45 @@ task autoStack(){
 	autoStackingInProgress = true;
 	closeClaw();
 	assignArmMotors(127);
+
 	int goalPos = positions[numCones];
-	while(SensorValue[potArm] < goalPos + 20){
+	while (SensorValue[potArm] < goalPos + 20){
 		if (SensorValue[potArm] > goalPos - 200){
 			assignFlipFlop(127);
 		}
 	}
-	assignArmMotors(-30);
-	while(SensorValue[potFlipFlop] > FLIPFLOPUP + 50){
+	
+	while (SensorValue[potFlipFlop] > FLIPFLOPUP + 150){
 		//wait
 	}
-	assignFlipFlop(10);
+
+    assignArmMotors(-127);
+	assignFlipFlop(5);
+    while (SensorValue[potArm] > goalPos){
+
+    }
+    assignClawMotor(-10);
+    assignFlipFlop(-127);
 
 	if (endAutoStackEarly){
+        assignArmMotors(0);
 		wait1Msec(1000);
-	}
-	assignArmMotors(-110);
-	wait1Msec(80);
-	assignArmMotors(20);
-	wait1Msec(0);
-	openClaw();
-
-	if (endAutoStackEarly){
-		return;
+        return;
 	}
 
-	goalPos = SensorValue[potArm];
-	assignArmMotors(100);
-	clearTimer(T4);
-	while(SensorValue[potArm] < goalPos + 155){
-		if (time1[T4] > 120){
-			assignFlipFlop(-127);
-		}
+    bool armExit = false;
+    bool flipFlopExit = false;
+	while (!armExit && !flipFlopExit){
+		if (SensorValue[potFlipFlop] >= FLIPFLOPDOWN - 100){
+            flipFlopExit = true;
+            assignFlipFlop(0);
+        }
+        if (SensorValue[potArm] < currentDownPos + 100)){
+            armExit = true;
+            assignArmMotors(0);
+        }
 	}
-	assignArmMotors(-127);
-	assignFlipFlop(-127);
-	while (SensorValue[potFlipFlop] <= FLIPFLOPDOWN - 500){
-		//wait
-	}
-	assignFlipFlop(-80);
-
-	while (SensorValue[potArm] > currentDownPos + 50){
-		//wait
-	}
-	assignArmMotors(-10);
-
-	assignFlipFlop(-20);
+    
 	autoStackingInProgress = false;
 }
 
