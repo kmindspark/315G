@@ -93,10 +93,6 @@ void forwardDistance(int power, int distance, bool brake, bool clear){
         assignDriveMotors(-straightBrakePower, -straightBrakePower);
         wait1Msec(100);
 	}
-	else {
-		assignDriveMotors(-10, -10);
-		wait1Msec(100);
-	}
 	assignDriveMotors(0, 0);
 }
 
@@ -115,10 +111,6 @@ void backwardDistance(int power, int distance, bool brake, bool clear){
 	if (brake){
         assignDriveMotors(straightBrakePower, straightBrakePower);
         wait1Msec(100);
-	}
-	else {
-		assignDriveMotors(-10, -10);
-		wait1Msec(100);
 	}
 	assignDriveMotors(0, 0);
 }
