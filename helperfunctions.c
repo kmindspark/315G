@@ -62,7 +62,7 @@ task brakeWheels(){
 	int forwardPower;
 	int turnPower;
 	int kTurn;
-    
+
     kTurn = KP_WHEELS_LOCK_ANGLE;
 
 	clearTimer(T4);
@@ -235,7 +235,7 @@ task autoStack(){
 			assignFlipFlop(127);
 		}
 	}
-	
+
 	while (SensorValue[potFlipFlop] > FLIPFLOPUP + 150){
 		//wait
 	}
@@ -245,7 +245,7 @@ task autoStack(){
     while (SensorValue[potArm] > goalPos){
 
     }
-    assignClawMotor(-10);
+    motor[claw] = (-10);
     assignFlipFlop(-127);
 
 	if (endAutoStackEarly){
@@ -256,17 +256,17 @@ task autoStack(){
 
     bool armExit = false;
     bool flipFlopExit = false;
-	while (!armExit && !flipFlopExit){
+		while (!armExit && !flipFlopExit){
 		if (SensorValue[potFlipFlop] >= FLIPFLOPDOWN - 100){
             flipFlopExit = true;
             assignFlipFlop(0);
         }
-        if (SensorValue[potArm] < currentDownPos + 100)){
+        if (SensorValue[potArm] < currentDownPos + 100){
             armExit = true;
             assignArmMotors(0);
         }
 	}
-    
+
 	autoStackingInProgress = false;
 }
 
