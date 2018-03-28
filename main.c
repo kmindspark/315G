@@ -152,11 +152,12 @@ task arm(){
 		if(vexRT[Btn6D] == 1){
 			stopTask(maintainArmPos);
 			assignArmMotors(-127);
+            motor[claw] = 0;
 			while(vexRT[Btn6D] == 1)
 			{
-				if (SensorValue[potArm] < BOTTOMARMPOS + 400){
+				/*if (SensorValue[potArm] < BOTTOMARMPOS + 400){
 					assignArmMotors(-100);
-				}
+				}*/
 			}
 			assignArmMotors(-15);
 		}
@@ -204,9 +205,7 @@ task flipfloptask {
 			motor[flipflop] = 127;
 			while (vexRT[Btn5U]){
 			}
-			motor[flipflop] = 5;
-			wait1Msec(200);
-			motor[claw] = 0;
+			motor[flipflop] = 10;
 		}
 		if (vexRT[Btn5D]){
 			motor[flipflop] = -127;
@@ -214,6 +213,7 @@ task flipfloptask {
 
 			}
 			motor[flipflop] = -10;
+            motor[claw] = -50;
 		}
 	}
 }
