@@ -152,7 +152,8 @@ task arm(){
 		if(vexRT[Btn6D] == 1){
 			stopTask(maintainArmPos);
 			assignArmMotors(-127);
-            motor[claw] = 0;
+			wait1Msec(250);
+      motor[claw] = 0;
 			while(vexRT[Btn6D] == 1)
 			{
 				/*if (SensorValue[potArm] < BOTTOMARMPOS + 400){
@@ -213,7 +214,9 @@ task flipfloptask {
 
 			}
 			motor[flipflop] = -10;
-            motor[claw] = -50;
+      motor[claw] = -127;
+      wait1Msec(200);
+      motor[claw] = -10;
 		}
 	}
 }
@@ -230,7 +233,7 @@ task clawtask {
 			while (vexRT[Btn7D] == 1){
 				motor[claw] = -127;
 			}
-			motor[claw] = -20;
+			motor[claw] = -10;
 		}
 	}
 }
@@ -389,4 +392,33 @@ task usercontrol(){
 	startTask(flipfloptask);
 	startTask(mogo);
 	startTask(coneCounter);
+	while (true){
+		while (vexRT[Btn8R]!=1){
+
+		}
+		stopTask(drive);
+		stopTask(mogo);
+		stopTask(arm);
+		stopTask(clawtask);
+		stopTask(flipfloptask);
+		stopTask(mogo);
+		stopTask(coneCounter);
+		wait1Msec(200);
+		assignArmMotors(0);
+		assignDriveMotors(0,0);
+		assignFlipFlop(0);
+		assignMogoMotors(0);
+		motor[claw] = 0;
+		while (vexRT[Btn8R]!=1){
+
+		}
+		startTask(drive);
+		startTask(mogo);
+		startTask(arm);
+		startTask(clawtask);
+		startTask(flipfloptask);
+		startTask(mogo);
+		startTask(coneCounter);
+		wait1Msec(200);
+	}
 }
