@@ -214,6 +214,18 @@ void assignFlipFlop(int power)
 	motor[flipflop] = power;
 }
 
+task monitorLoaderArm(){
+    while (true){
+        if (SensorValue[potArm] < LOADERARMPOS){
+            assignArmMotors(50);
+            wait1Msec(200);
+            assignArmMotors(0);
+            closeClaw();
+            break;
+        }
+    }
+}
+
 task maintainArmPos(){
 	int goalPos = SensorValue[potArm];
 	int diff;

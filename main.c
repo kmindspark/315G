@@ -43,6 +43,7 @@ int numCones = 0;
 int autonChoice = 0;
 bool left = true;
 bool brake = false;
+bool reverseStack = false;
 int autonForwardBrake = 0;
 int goalDriveValue;
 int autonAngleBrake = 0;
@@ -153,21 +154,26 @@ task arm(){
 			stopTask(maintainArmPos);
 			assignArmMotors(-127);
 			wait1Msec(250);
-      motor[claw] = 0;
+             motor[claw] = 0;
 			while(vexRT[Btn6D] == 1)
 			{
-				/*if (SensorValue[potArm] < BOTTOMARMPOS + 400){
-					assignArmMotors(-100);
-				}*/
+				if (brake && SensorValue[potArm] < LOADERARMPOS){
+					assignArmMotors(30);
+                    wait1Msec(200);
+                    assignArmMotors(0);
+                    closeClaw();
+				}
 			}
-			assignArmMotors(-15);
+            if (!brake){
+                assignArmMotors(-15);
+            }
 		}
 		if (vexRT[Btn7R] == 1){
 			stopTask(maintainArmPos);
 			autoStackCones();
 			numCones++;
 		}
-		if (vexRT[Btn7L] == 1){
+		/*if (vexRT[Btn7L] == 1){
 			if (currentDownPos == BOTTOMARMPOS){
 				currentDownPos = LOADERARMPOS;
 			}
@@ -175,7 +181,7 @@ task arm(){
 				currentDownPos = BOTTOMARMPOS;
 			}
 			wait1Msec(300);
-		}
+		}*/
 	}
 }
 
@@ -214,9 +220,11 @@ task flipfloptask {
 
 			}
 			motor[flipflop] = -10;
-      motor[claw] = -127;
-      wait1Msec(200);
-      motor[claw] = -10;
+            if (!reverseStack){
+                motor[claw] = -127;
+                wait1Msec(200);
+                motor[claw] = -10;
+            }
 		}
 	}
 }
@@ -235,6 +243,10 @@ task clawtask {
 			}
 			motor[claw] = -10;
 		}
+        if (vexRT[Btn7L] == 1){
+            reverseStack != reverseStack
+            wait1Msec(200);
+        }
 	}
 }
 
@@ -257,6 +269,8 @@ task playMusic{
     while (true){
         switch (song){
             case 1:
+                playTone()
+
                 playSoundFile("life_1.wav");
                 break;
             case 2:
