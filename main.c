@@ -81,23 +81,23 @@ task slew{
 }
 
 int computeActualValue(int input){
-    float inVal = ((float) abs(input));
+	float inVal = ((float) abs(input));
 
-    if (abs(input) < 15){
-        return 0;
-    }
-    else if (input > 125){
-        return 127;
-    }
-    else if (input < -125){
-        return -127;
-    }
+	if (abs(input) < 15){
+		return 0;
+	}
+	else if (input > 125){
+		return 127;
+	}
+	else if (input < -125){
+		return -127;
+	}
 
-    int returnVal = (int) (inVal*inVal*inVal*inVal*inVal*DRIVEA + inVal*DRIVEM + DRIVEB);
-    if (input < 0) {
-        returnVal *= -1;
-    }
-    return returnVal;
+	int returnVal = (int) (inVal*inVal*inVal*inVal*inVal*DRIVEA + inVal*DRIVEM + DRIVEB);
+	if (input < 0) {
+		returnVal *= -1;
+	}
+	return returnVal;
 }
 
 task drive(){
@@ -114,7 +114,7 @@ task drive(){
 		}
 		else{
 			forward = computeActualValue(vexRT[Ch3Xmtr2]);
-			turn = computeActualValue(vexRT[Ch1Xmtr2]);
+			turn = computeActualValue(vexRT[Ch1Xmtr2])*3/4;
 		}
 
 		goalDrivePowerL = forward + turn;
@@ -131,11 +131,11 @@ task drive(){
 				goalDriveValue = 0;
 				goalDriveAngle = 0;
 				startTask(brakeWheels);
-			} else {
+				} else {
 				stopTask(brakeWheels);
 			}
 			wait1Msec(200);
-        }
+		}
 	}
 }
 
@@ -143,6 +143,8 @@ task arm(){
 	while(true){
 		if(vexRT[Btn6U] == 1){
 			stopTask(maintainArmPos);
+			stopTask(monitorLoaderArm);
+			stopTask(monitorDownArm);
 			assignArmMotors(127);
 			while(vexRT[Btn6U] == 1)
 			{
@@ -152,21 +154,37 @@ task arm(){
 		}
 		if(vexRT[Btn6D] == 1){
 			stopTask(maintainArmPos);
+			stopTask(monitorLoaderArm);
+			stopTask(monitorDownArm);
 			assignArmMotors(-127);
+			if (reverseStack){
+				assignArmMotors(-50);
+			}
 			wait1Msec(250);
-             motor[claw] = 0;
+			if (SensorValue[potFlipFlop] < FLIPFLOPDOWN - 500){
+				motor[claw] = 0;
+			}
 			while(vexRT[Btn6D] == 1)
 			{
-				if (brake && SensorValue[potArm] < LOADERARMPOS){
-					assignArmMotors(30);
-                    wait1Msec(200);
-                    assignArmMotors(0);
-                    closeClaw();
-				}
+
 			}
-            if (!brake){
-                assignArmMotors(-15);
-            }
+			if (brake){
+				if (clawOpen && motor[flipflop] <= 0){
+					startTask(monitorLoaderArm);
+				}
+				else {
+					assignArmMotors(20);
+					wait1Msec(100);
+					assignArmMotors(0);
+				}
+			} else if (reverseStack) {
+				assignArmMotors(20);
+				wait1Msec(100);
+				assignArmMotors(0);
+			} else {
+				//startTask(monitorDownArm);
+				assignArmMotors(-10);
+			}
 		}
 		if (vexRT[Btn7R] == 1){
 			stopTask(maintainArmPos);
@@ -174,13 +192,13 @@ task arm(){
 			numCones++;
 		}
 		/*if (vexRT[Btn7L] == 1){
-			if (currentDownPos == BOTTOMARMPOS){
-				currentDownPos = LOADERARMPOS;
-			}
-			if (currentDownPos == LOADERARMPOS){
-				currentDownPos = BOTTOMARMPOS;
-			}
-			wait1Msec(300);
+		if (currentDownPos == BOTTOMARMPOS){
+		currentDownPos = LOADERARMPOS;
+		}
+		if (currentDownPos == LOADERARMPOS){
+		currentDownPos = BOTTOMARMPOS;
+		}
+		wait1Msec(300);
 		}*/
 	}
 }
@@ -213,18 +231,24 @@ task flipfloptask {
 			while (vexRT[Btn5U]){
 			}
 			motor[flipflop] = 10;
+			if (reverseStack){
+					motor[claw] = -5;
+			}
 		}
 		if (vexRT[Btn5D]){
+			clawOpen = true;
 			motor[flipflop] = -127;
 			while (vexRT[Btn5D]){
 
 			}
 			motor[flipflop] = -10;
-            if (!reverseStack){
-                motor[claw] = -127;
-                wait1Msec(200);
-                motor[claw] = -10;
-            }
+			if (!reverseStack && !brake){
+				//openClaw();
+			}
+			if (brake){
+				motor[claw] = -15;
+				motor[flipflop] = -30;
+			}
 		}
 	}
 }
@@ -235,18 +259,20 @@ task clawtask {
 			while (vexRT[Btn7U] == 1){
 				motor[claw] = 127;
 			}
-			motor[claw] = 35;
+			clawOpen = false;
+			motor[claw] = 45;
 		}
 		if (vexRT[Btn7D] == 1){
 			while (vexRT[Btn7D] == 1){
 				motor[claw] = -127;
 			}
-			motor[claw] = -10;
+			clawOpen = true;
+			motor[claw] = -20;
 		}
-        if (vexRT[Btn7L] == 1){
-            reverseStack != reverseStack
-            wait1Msec(200);
-        }
+		if (vexRT[Btn7L] == 1){
+			reverseStack = !reverseStack;
+			wait1Msec(200);
+		}
 	}
 }
 
@@ -266,33 +292,31 @@ task coneCounter(){
 
 
 task playMusic{
-    while (true){
-        switch (song){
-            case 1:
-                playTone()
-
-                playSoundFile("life_1.wav");
-                break;
-            case 2:
-                playSoundFile("stars_4.wav");
-                break;
-            case 3:
-                playSoundFile("sandstorm_3.wav");
-                break;
-	    }
-	    wait1Msec(2000);
-    }
+	while (true){
+		switch (song){
+		case 1:
+			playSoundFile("life_1.wav");
+			break;
+		case 2:
+			playSoundFile("stars_4.wav");
+			break;
+		case 3:
+			playSoundFile("sandstorm_3.wav");
+			break;
+		}
+		wait1Msec(2000);
+	}
 }
 
 void pre_auton(){
 	bLCDBacklight = true;
-  //bPlaySounds = true;
-  //nVolume = 4;
+	//bPlaySounds = true;
+	//nVolume = 4;
 	displayLCDCenteredString(0, "Init. gyro");
 	SensorType[gyro] = sensorNone;
-	wait1Msec(2000);
+	wait1Msec(200);
 	SensorType[gyro] = sensorGyro;
-	wait1Msec(2000);
+	wait1Msec(200);
 	competitionState = vexCompetitionState;
 	clearLCDLine(0);
 	clearLCDLine(1);
@@ -377,18 +401,18 @@ void pre_auton(){
 
 task autonomous()
 {
-		switch (autonChoice){
-		case 1: autonomousConeIn20Pt(!left, false, false, false, 3); break;
-		case 2: autonomousConeIn20Pt(!left, false, false, false, 1); break;
-		case 3: autonomousConeIn20Pt(!left, false, false, false, 0); break;
-		case 4: autonomousConeIn20Pt(!left, false, true, false, 3); break;
-		case 5: autonomousConeIn20Pt(!left, false, true, false, 1); break;
-		case 6: autonomousConeIn20Pt(!left, false, true, false, 0); break;
-		case 7: autonomousConeIn20Pt(!left, true, false, false, 3); break;
-		case 8: autonomousStationary(!left, true); break;
-		case 9: autonomousStationary(!left, false); break;
-		case 10: autonDefense(); break;
-		default: break;
+	switch (autonChoice){
+	case 1: autonomousConeIn20Pt(!left, false, false, false, 3); break;
+	case 2: autonomousConeIn20Pt(!left, false, false, false, 1); break;
+	case 3: autonomousConeIn20Pt(!left, false, false, false, 0); break;
+	case 4: autonomousConeIn20Pt(!left, false, true, false, 3); break;
+	case 5: autonomousConeIn20Pt(!left, false, true, false, 1); break;
+	case 6: autonomousConeIn20Pt(!left, false, true, false, 0); break;
+	case 7: autonomousConeIn20Pt(!left, true, false, false, 3); break;
+	case 8: autonomousStationary(!left, true); break;
+	case 9: autonomousStationary(!left, false); break;
+	case 10: autonDefense(); break;
+	default: break;
 	}
 }
 
@@ -417,6 +441,8 @@ task usercontrol(){
 		stopTask(flipfloptask);
 		stopTask(mogo);
 		stopTask(coneCounter);
+		stopTask(monitorDownArm);
+		stopTask(monitorLoaderArm);
 		wait1Msec(200);
 		assignArmMotors(0);
 		assignDriveMotors(0,0);
