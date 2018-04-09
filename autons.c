@@ -3,7 +3,7 @@
 string autons[11] = {"No Auton", "4 in 20", "2 in 20", "1 in 20", "4 in 5", "2 in 5", "1 in 5", "Stackalot", "Stat + 2 in 5", "Stat + Def", "iM a DeFeNsE bOt"};
 
 void autonomousStationary(bool reverse, bool extraCones){
-	motor[claw] = 35;
+	motor[rollers] = 35;
 	assignMogoMotors(-127);
 	wait1Msec(300);
 	assignArmMotors(127);
@@ -22,7 +22,7 @@ void autonomousStationary(bool reverse, bool extraCones){
 	wait1Msec(500);
 	assignArmMotors(0);
 	wait1Msec(300);
-	openClaw();
+	openRollers();
 	wait1Msec(200);
 
 	assignArmMotors(50);
@@ -56,7 +56,7 @@ void autonomousStationary(bool reverse, bool extraCones){
 		assignMogoMotors(10);
 		assignArmMotors(-80);
 		assignFlipFlop(-10);
-		openClaw();
+		openRollers();
 		wait1Msec(200);
 		assignArmMotors(-10);
 		assignFlipFlop(-10);
@@ -106,7 +106,7 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 {
 	endAutoStackEarly = false;
 	clearTimer(T1);
-	motor[claw] = 20; //Drive forward to pick up mobile goal and score the cone on it
+	motor[rollers] = 20; //Drive forward to pick up mobile goal and score the cone on it
 	assignArmMotors(45);
 	assignMogoMotors(-127);
 	forwardDistance(127, 1210, false);
@@ -120,7 +120,7 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 	assignMogoMotors(30);
 	assignArmMotors(0);
 	wait1Msec(200);
-	openClaw(); //At this point the one cone is scored
+	openRollers(); //At this point the one cone is scored
 	if (extraCones > 0){
 		assignArmMotors(20);
 		assignFlipFlop(-127);
@@ -175,7 +175,7 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 		backwardDistance(127, 400);
 		stopTask(autoStack);
 		endAutoStackEarly = false;
-		openClaw();
+		openRollers();
 		assignArmMotors(80);
 		turnLeft(127, 45, reverse);
 		assignArmMotors(0);
@@ -251,13 +251,13 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 }
 
 void autonDefense(){
-	closeClaw();
+	closeRollers();
 	backwardTime(127, 4000);
 }
 
 
 void programmingSkills(){
-	closeClaw();
+	closeRollers();
 	assignMogoMotors(-127);
 	wait1Msec(500);
 	assignMogoMotors(-10);
@@ -287,7 +287,7 @@ void programmingSkills(){
 	wait1Msec(800);
 	assignMogoMotors(10); //have picked up second mogo
 	//backwardDistance(80, 185);
-	openClaw();
+	openRollers();
 	turnLeft(50, 185, false); //190
 	stopTask(brakeWheels);
 	forwardDistance(120, 500, false); //deposit second mogo

@@ -19,12 +19,12 @@ int currentDownPos=BOTTOMARMPOS;
 int goalArmHeight = BOTTOMARMPOS;
 bool autoStackingInProgress;
 bool endAutoStackEarly = false;
-bool clawOpen;
+bool rollersOpen;
 int anticipateTurn = EARLYBRAKEDEGREES;
 int angleBrakePower = ANGLEBRAKEPOWER;
 int straightBrakePower = STRAIGHTBRAKEPOWER;
 
-int positions[18]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int positions[18]={1450, 1530, 1610, 1690, 1770, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 void turnLeft(int power, int degrees, bool reverse, bool clear);
 void turnRight(int power, int degrees, bool reverse, bool clear);
@@ -33,20 +33,21 @@ int encoderAverage(int one, int two){
 	return (abs(one) + abs(two))/2;
 }
 
-void closeClaw()
-{
-	motor[claw] = 127;
+task closeRollersTask(){
+	motor[rollers] = 127;
 	wait1Msec(250);
-	clawOpen = false;
-	motor[claw] = 35;
+	rollersOpen = false;
+	motor[rollers] = 10;
 }
 
-void openClaw()
+void closeRollers()
 {
-	motor[claw] = -127;
-	wait1Msec(250);
-	clawOpen = true;
-	motor[claw] = -15;
+    startTask(closeRollersTask);
+}
+
+void openRollers()
+{
+	motor[rollers] = -127;
 }
 
 void assignArmMotors(int power){
@@ -241,7 +242,7 @@ task monitorLoaderArm(){
 			goalArmHeight = REALLOADERARMPOS;
 			startTask(maintainArmPos);
 			wait1Msec(100);
-			closeClaw();
+			closeRollers();
 			assignFlipFlop(0);
 			stopTask(maintainArmPos);
 			break;
@@ -255,10 +256,10 @@ task monitorLoaderArm(){
 			//assignArmMotors(30);
 			//wait1Msec(120);
 			//assignArmMotors(10);
-			//closeClaw();
+			//closeRollers();
 			//startTask(maintainArmPos);
-			closeClaw();
-			clawOpen = false;
+			closeRollers();
+			rollersOpen = false;
 			assignFlipFlop(0);
 			stopTask(maintainArmPos);
 			break;
@@ -284,7 +285,7 @@ task monitorDownArm(){
 
 task autoStack(){
 	autoStackingInProgress = true;
-	closeClaw();
+	closeRollers();
 	assignArmMotors(127);
 
 	int goalPos = positions[numCones];
@@ -303,7 +304,7 @@ task autoStack(){
 	while (SensorValue[potArm] > goalPos){
 
 	}
-	motor[claw] = (-10);
+	motor[rollers] = (-10);
 	assignFlipFlop(-127);
 
 	if (endAutoStackEarly){
