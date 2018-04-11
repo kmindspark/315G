@@ -282,50 +282,56 @@ task monitorDownArm(){
 }
 
 
-
 task autoStack(){
 	autoStackingInProgress = true;
 	closeRollers();
 	assignArmMotors(127);
-
 	int goalPos = positions[numCones];
-	while (SensorValue[potArm] < goalPos + 20){
+	while(SensorValue[potArm] < goalPos + 20){
 		if (SensorValue[potArm] > goalPos - 200){
 			assignFlipFlop(127);
 		}
 	}
-
-	while (SensorValue[potFlipFlop] > FLIPFLOPUP + 150){
+	assignArmMotors(-30);
+	while(SensorValue[potFlipFlop] > FLIPFLOPUP + 50){
 		//wait
 	}
-
-	assignArmMotors(-127);
-	assignFlipFlop(5);
-	while (SensorValue[potArm] > goalPos){
-
-	}
-	motor[rollers] = (-10);
-	assignFlipFlop(-127);
+	assignFlipFlop(10);
 
 	if (endAutoStackEarly){
-		assignArmMotors(0);
 		wait1Msec(1000);
+	}
+	assignArmMotors(-127);
+	wait1Msec(80);
+	assignArmMotors(20);
+	wait1Msec(0);
+	openRollers();
+
+	if (endAutoStackEarly){
 		return;
 	}
 
-	bool armExit = false;
-	bool flipFlopExit = false;
-	while (!armExit && !flipFlopExit){
-		if (SensorValue[potFlipFlop] >= FLIPFLOPDOWN - 100){
-			flipFlopExit = true;
-			assignFlipFlop(0);
-		}
-		if (SensorValue[potArm] < currentDownPos + 100){
-			armExit = true;
-			assignArmMotors(0);
+	goalPos = SensorValue[potArm];
+	assignArmMotors(127);
+	clearTimer(T4);
+	while(SensorValue[potArm] < goalPos + 155){
+		if (SensorValue[potArm] > goalPos + 50){
+			assignFlipFlop(-127);
 		}
 	}
+	assignArmMotors(-127);
+	assignFlipFlop(-127);
+	while (SensorValue[potFlipFlop] <= FLIPFLOPDOWN - 500){
+		//wait
+	}
+	assignFlipFlop(-80);
 
+	while (SensorValue[potArm] > currentDownPos + 50){
+		//wait
+	}
+	assignArmMotors(-10);
+
+	assignFlipFlop(-20);
 	autoStackingInProgress = false;
 }
 

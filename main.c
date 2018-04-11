@@ -153,32 +153,16 @@ task arm(){
 		if(vexRT[Btn6D] == 1){
 			stopTask(maintainArmPos);
 			assignArmMotors(-127);
-			wait1Msec(250);
-             motor[rollers] = 0;
 			while(vexRT[Btn6D] == 1)
 			{
 			}
-            if (!brake){
-                assignArmMotors(-15);
-            } else {
-                assignArmMotors(0);
-                startTask(monitorLoaderArm)
-            }
+            assignArmMotors(0);
 		}
 		if (vexRT[Btn7R] == 1){
 			stopTask(maintainArmPos);
 			autoStackCones();
 			numCones++;
 		}
-		/*if (vexRT[Btn7L] == 1){
-			if (currentDownPos == BOTTOMARMPOS){
-				currentDownPos = LOADERARMPOS;
-			}
-			if (currentDownPos == LOADERARMPOS){
-				currentDownPos = BOTTOMARMPOS;
-			}
-			wait1Msec(300);
-		}*/
 	}
 }
 
@@ -208,6 +192,7 @@ task flipfloptask {
 		if (vexRT[Btn5U]){
 			motor[flipflop] = 127;
 			while (vexRT[Btn5U]){
+
 			}
 			motor[flipflop] = 10;
 		}
@@ -217,11 +202,6 @@ task flipfloptask {
 
 			}
 			motor[flipflop] = -10;
-            if (!reverseStack){
-                motor[rollers] = -127;
-                wait1Msec(200);
-                motor[rollers] = -10;
-            }
 		}
 	}
 }
@@ -260,8 +240,6 @@ task playMusic{
     while (true){
         switch (song){
             case 1:
-                playTone()
-
                 playSoundFile("life_1.wav");
                 break;
             case 2:
@@ -281,9 +259,9 @@ void pre_auton(){
   //nVolume = 4;
 	displayLCDCenteredString(0, "Init. gyro");
 	SensorType[gyro] = sensorNone;
-	wait1Msec(2000);
+	wait1Msec(200);
 	SensorType[gyro] = sensorGyro;
-	wait1Msec(2000);
+	wait1Msec(200);
 	competitionState = vexCompetitionState;
 	clearLCDLine(0);
 	clearLCDLine(1);
