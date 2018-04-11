@@ -24,7 +24,7 @@ int anticipateTurn = EARLYBRAKEDEGREES;
 int angleBrakePower = ANGLEBRAKEPOWER;
 int straightBrakePower = STRAIGHTBRAKEPOWER;
 
-int positions[18]={1450, 1530, 1610, 1690, 1770, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int positions[18]={1400, 1490, 1560, 1630, 1700, 1770, 1840, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 void turnLeft(int power, int degrees, bool reverse, bool clear);
 void turnRight(int power, int degrees, bool reverse, bool clear);
@@ -42,7 +42,7 @@ task closeRollersTask(){
 
 void closeRollers()
 {
-    startTask(closeRollersTask);
+	startTask(closeRollersTask);
 }
 
 void openRollers()
@@ -253,16 +253,16 @@ task monitorLoaderArm(){
 		}
 
 		/**if (SensorValue[potArm] < LOADERARMPOS - 200){
-			//assignArmMotors(30);
-			//wait1Msec(120);
-			//assignArmMotors(10);
-			//closeRollers();
-			//startTask(maintainArmPos);
-			closeRollers();
-			rollersOpen = false;
-			assignFlipFlop(0);
-			stopTask(maintainArmPos);
-			break;
+		//assignArmMotors(30);
+		//wait1Msec(120);
+		//assignArmMotors(10);
+		//closeRollers();
+		//startTask(maintainArmPos);
+		closeRollers();
+		rollersOpen = false;
+		assignFlipFlop(0);
+		stopTask(maintainArmPos);
+		break;
 		}*/
 	}
 }
@@ -292,7 +292,7 @@ task autoStack(){
 			assignFlipFlop(127);
 		}
 	}
-	assignArmMotors(-30);
+	startTask(maintainArmPos);
 	while(SensorValue[potFlipFlop] > FLIPFLOPUP + 50){
 		//wait
 	}
@@ -302,15 +302,14 @@ task autoStack(){
 		wait1Msec(1000);
 	}
 	assignArmMotors(-127);
-	wait1Msec(80);
-	assignArmMotors(20);
-	wait1Msec(0);
+	wait1Msec(300);
 	openRollers();
 
 	if (endAutoStackEarly){
 		return;
 	}
 
+	stopTask(maintainArmPos);
 	goalPos = SensorValue[potArm];
 	assignArmMotors(127);
 	clearTimer(T4);
@@ -319,12 +318,14 @@ task autoStack(){
 			assignFlipFlop(-127);
 		}
 	}
+
+	motor[rollers] = 127;
 	assignArmMotors(-127);
 	assignFlipFlop(-127);
 	while (SensorValue[potFlipFlop] <= FLIPFLOPDOWN - 500){
 		//wait
 	}
-	assignFlipFlop(-80);
+	assignFlipFlop(0);
 
 	while (SensorValue[potArm] > currentDownPos + 50){
 		//wait

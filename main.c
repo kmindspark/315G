@@ -156,7 +156,7 @@ task arm(){
 			while(vexRT[Btn6D] == 1)
 			{
 			}
-            assignArmMotors(0);
+            assignArmMotors(-5);
 		}
 		if (vexRT[Btn7R] == 1){
 			stopTask(maintainArmPos);
