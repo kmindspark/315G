@@ -81,23 +81,28 @@ task slew{
 }
 
 int computeActualValue(int input){
-    float inVal = ((float) abs(input));
 
-    if (abs(input) < 15){
-        return 0;
-    }
-    else if (input > 125){
-        return 127;
-    }
-    else if (input < -125){
-        return -127;
-    }
+	float inVal = ((float) abs(input));
 
-    int returnVal = (int) (inVal*inVal*inVal*inVal*inVal*DRIVEA + inVal*DRIVEM + DRIVEB);
-    if (input < 0) {
-        returnVal *= -1;
-    }
-    return returnVal;
+	if (abs(input) < 15){
+		return 0;
+	} else {
+		return input;
+	}
+	/*
+	else if (input > 125){
+		return 127;
+	}
+	else if (input < -125){
+		return -127;
+	}
+
+	int returnVal = (int) (inVal*inVal*inVal*inVal*inVal*DRIVEA + inVal*DRIVEM + DRIVEB);
+
+	if (input < 0) {
+		returnVal *= -1;
+	}
+	return returnVal;*/
 }
 
 task drive(){
@@ -115,7 +120,14 @@ task drive(){
 		else{
 			forward = computeActualValue(vexRT[Ch3Xmtr2]);
 			turn = computeActualValue(vexRT[Ch1Xmtr2]);
+			if(SensorValue[potArm] >= LOADERARMPOS + 300)
+			{
+				turn /= 2;
+				forward /= 2;
+			}
 		}
+
+
 
 		goalDrivePowerL = forward + turn;
 		goalDrivePowerR = forward - turn;
@@ -131,11 +143,11 @@ task drive(){
 				goalDriveValue = 0;
 				goalDriveAngle = 0;
 				startTask(brakeWheels);
-			} else {
+				} else {
 				stopTask(brakeWheels);
 			}
 			wait1Msec(200);
-        }
+		}
 	}
 }
 
@@ -156,7 +168,7 @@ task arm(){
 			while(vexRT[Btn6D] == 1)
 			{
 			}
-            assignArmMotors(-5);
+			assignArmMotors(-10);
 		}
 		if (vexRT[Btn7R] == 1){
 			stopTask(maintainArmPos);
@@ -201,7 +213,7 @@ task flipfloptask {
 			while (vexRT[Btn5D]){
 
 			}
-			motor[flipflop] = -10;
+			motor[flipflop] = -15;
 		}
 	}
 }
@@ -212,11 +224,12 @@ task rollerstask {
 			while (vexRT[Btn7U] == 1){
 				motor[rollers] = 127;
 			}
-			motor[rollers] = 10;
+			motor[rollers] = 30;
 		}
 		if (vexRT[Btn7D] == 1){
 			motor[rollers] = -127;
-            wait1Msec(200);
+			wait1Msec(300);
+			motor[rollers] = 0;
 		}
 	}
 }
@@ -237,31 +250,31 @@ task coneCounter(){
 
 
 task playMusic{
-    while (true){
-        switch (song){
-            case 1:
-                playSoundFile("life_1.wav");
-                break;
-            case 2:
-                playSoundFile("stars_4.wav");
-                break;
-            case 3:
-                playSoundFile("sandstorm_3.wav");
-                break;
-	    }
-	    wait1Msec(2000);
-    }
+	while (true){
+		switch (song){
+		case 1:
+			//playSoundFile("life_1.wav");
+			break;
+		case 2:
+			//playSoundFile("stars_4.wav");
+			break;
+		case 3:
+			//playSoundFile("sandstorm_3.wav");
+			break;
+		}
+		wait1Msec(2000);
+	}
 }
 
 void pre_auton(){
 	bLCDBacklight = true;
-  //bPlaySounds = true;
-  //nVolume = 4;
+	//bPlaySounds = true;
+	//nVolume = 4;
 	displayLCDCenteredString(0, "Init. gyro");
 	SensorType[gyro] = sensorNone;
-	wait1Msec(200);
+	wait1Msec(2000);
 	SensorType[gyro] = sensorGyro;
-	wait1Msec(200);
+	wait1Msec(2000);
 	competitionState = vexCompetitionState;
 	clearLCDLine(0);
 	clearLCDLine(1);
@@ -346,22 +359,28 @@ void pre_auton(){
 
 task autonomous()
 {
-		switch (autonChoice){
-		case 1: autonomousConeIn20Pt(!left, false, false, false, 3); break;
-		case 2: autonomousConeIn20Pt(!left, false, false, false, 1); break;
-		case 3: autonomousConeIn20Pt(!left, false, false, false, 0); break;
-		case 4: autonomousConeIn20Pt(!left, false, true, false, 3); break;
-		case 5: autonomousConeIn20Pt(!left, false, true, false, 1); break;
-		case 6: autonomousConeIn20Pt(!left, false, true, false, 0); break;
-		case 7: autonomousConeIn20Pt(!left, true, false, false, 3); break;
-		case 8: autonomousStationary(!left, true); break;
-		case 9: autonomousStationary(!left, false); break;
-		case 10: autonDefense(); break;
-		default: break;
+	switch (autonChoice){
+	case 1: autonomousConeIn20Pt(!left, false, false, false, 3); break;
+	case 2: autonomousConeIn20Pt(!left, false, false, false, 1); break;
+	case 3: autonomousConeIn20Pt(!left, false, false, false, 0); break;
+	case 4: autonomousConeIn20Pt(!left, false, true, false, 3); break;
+	case 5: autonomousConeIn20Pt(!left, false, true, false, 1); break;
+	case 6: autonomousConeIn20Pt(!left, false, true, false, 0); break;
+	case 7: autonomousConeIn20Pt(!left, true, false, false, 3); break;
+	case 8: autonomousStationary(!left, true); break;
+	case 9: autonomousStationary(!left, false); break;
+	case 10: autonDefense(); break;
+	default: break;
 	}
+
 }
 
 task usercontrol(){
+	turnRight(127, 90, false);
+	return;
+	SensorValue[leftEncoder] = 0;
+	SensorValue[rightEncoder] = 0;
+
 	stopTask(playMusic);
 	clearSounds();
 	endAutoStackEarly = false;

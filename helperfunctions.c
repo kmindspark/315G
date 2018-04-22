@@ -1,17 +1,18 @@
-#define FLIPFLOPDOWN 3700 //was 3650
-#define FLIPFLOPUP 1920 //was 2150 before
+#define FLIPFLOPDOWN 3480 //was 3650
+#define FLIPFLOPUP 2100 //was 2150 before
 #define BOTTOMARMPOS 1400 //was 1575 before
 #define LOADERARMPOS 2060
 #define REALLOADERARMPOS 1800
-#define STATIONARYARMPOS 1250
+#define STATIONARYARMPOS 2200
 #define KP_WHEELS_FORWARD 1.1 //0.8 //TODO: experiment with scaling power polynomially (perhaps quadratically) instead of linearly when braking
 #define KP_WHEELS_ANGLE 0.06
 #define KP_WHEELS_LOCK_ANGLE 1.2
 #define KP_ARM 0.35
 #define KP_CORRECTDRIVE 0.8
-#define EARLYBRAKEDEGREES 80
+#define EARLYBRAKEDEGREES 99
+#define EARLYBRAKEDEGREESMOGO 75
 #define STRAIGHTBRAKEPOWER 87
-#define ANGLEBRAKEPOWER 87
+#define ANGLEBRAKEPOWER 40//70
 
 float currentKPForward = KP_WHEELS_FORWARD;
 
@@ -24,7 +25,7 @@ int anticipateTurn = EARLYBRAKEDEGREES;
 int angleBrakePower = ANGLEBRAKEPOWER;
 int straightBrakePower = STRAIGHTBRAKEPOWER;
 
-int positions[18]={1400, 1490, 1560, 1630, 1700, 1770, 1840, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int positions[18]={1380, 1490, 1620, 1700, 1760, 1830, 1840, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 void turnLeft(int power, int degrees, bool reverse, bool clear);
 void turnRight(int power, int degrees, bool reverse, bool clear);
@@ -35,9 +36,9 @@ int encoderAverage(int one, int two){
 
 task closeRollersTask(){
 	motor[rollers] = 127;
-	wait1Msec(250);
+	wait1Msec(500);
 	rollersOpen = false;
-	motor[rollers] = 10;
+	motor[rollers] = 35;
 }
 
 void closeRollers()
@@ -49,6 +50,8 @@ void openRollers()
 {
 	motor[rollers] = -127;
 }
+
+
 
 void assignArmMotors(int power){
 	motor[armL1] = power;
@@ -180,8 +183,9 @@ void turnRight(int power, int degrees, bool reverse, bool clear)
 	degrees = degrees*10;
 
 	while (abs(SensorValue[gyro]) < degrees - anticipateTurn){}
+
 	assignDriveMotors(-angleBrakePower, angleBrakePower);
-	wait1Msec(150);
+	wait1Msec(125);
 	assignDriveMotors(0, 0);
 }
 
@@ -203,7 +207,7 @@ void turnLeft(int power, int degrees, bool reverse, bool clear)
 
 	while (abs(SensorValue[gyro]) < degrees - anticipateTurn){}
 	assignDriveMotors(angleBrakePower, -angleBrakePower);
-	wait1Msec(150);
+	wait1Msec(125);
 	assignDriveMotors(0, 0);
 }
 
@@ -222,8 +226,9 @@ void assignFlipFlop(int power)
 
 task maintainArmPos{
 	int diff;
+	int curgoal = SensorValue[potArm];
 	while (true){
-		diff = goalArmHeight - SensorValue[potArm];
+		diff = curgoal - SensorValue[potArm];
 		int power = diff*KP_ARM;
 		if (power < -30){
 			power = -30;
@@ -292,29 +297,38 @@ task autoStack(){
 			assignFlipFlop(127);
 		}
 	}
+	//assignArmMotors(-10);
 	startTask(maintainArmPos);
 	while(SensorValue[potFlipFlop] > FLIPFLOPUP + 50){
 		//wait
 	}
 	assignFlipFlop(10);
 
-	if (endAutoStackEarly){
+
+	/*if (endAutoStackEarly){
 		wait1Msec(1000);
-	}
+		motor[rollers] = 0;
+		stopTask(maintainArmPos);
+		assignArmMotors(-10);
+		return;
+	}*/
+
+	stopTask(maintainArmPos);
 	assignArmMotors(-127);
-	wait1Msec(300);
+	wait1Msec(150);
 	openRollers();
+	wait1Msec(150);
 
 	if (endAutoStackEarly){
+		motor[rollers] = 0;
 		return;
 	}
 
-	stopTask(maintainArmPos);
 	goalPos = SensorValue[potArm];
 	assignArmMotors(127);
 	clearTimer(T4);
-	while(SensorValue[potArm] < goalPos + 155){
-		if (SensorValue[potArm] > goalPos + 50){
+	while(SensorValue[potArm] < goalPos + 200){
+		if (SensorValue[potArm] > goalPos + 30){
 			assignFlipFlop(-127);
 		}
 	}
