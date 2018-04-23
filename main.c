@@ -359,6 +359,8 @@ void pre_auton(){
 
 task autonomous()
 {
+	//turnLeft(127, 90, true);
+	//return;
 	switch (autonChoice){
 	case 1: autonomousConeIn20Pt(!left, false, false, false, 3); break;
 	case 2: autonomousConeIn20Pt(!left, false, false, false, 1); break;
@@ -376,8 +378,6 @@ task autonomous()
 }
 
 task usercontrol(){
-	turnRight(127, 90, false);
-	return;
 	SensorValue[leftEncoder] = 0;
 	SensorValue[rightEncoder] = 0;
 

@@ -4,10 +4,10 @@ string autons[11] = {"No Auton", "4 in 20", "2 in 20", "1 in 20", "4 in 5", "2 i
 
 void autonomousStationary(bool reverse, bool extraCones){
 	motor[rollers] = 35;
-	assignArmMotors(90);
+	assignArmMotors(127);
 	assignMogoMotors(127);
 	forwardDistance(127, 120, false, true);
-	assignArmMotors(65);
+	assignArmMotors(127);
 	forwardDistance(127, 300, false, false);
 	while (SensorValue[potArm] < STATIONARYARMPOS)
 	{
@@ -50,30 +50,32 @@ void autonomousStationary(bool reverse, bool extraCones){
 
 	if (extraCones){
 		assignArmMotors(-127);
-		backwardDistance(80, 555);//555 without forward brake
+		backwardDistance(80, 565);//555
 		assignArmMotors(-15);
 		wait1Msec(300);
 		turnLeft(127, 90, reverse, false);
-		assignArmMotors(60);
-		wait1Msec(200);
-		assignArmMotors(0);
+		forwardDistance(40, 200, false, true);
+		forwardDistance(80, 400, false, false);
+		assignArmMotors(50);
 		assignMogoMotors(-127);
 		wait1Msec(100);
-		forwardDistance(40, 200, false, true);
-		assignMogoMotors(-100);
+		assignArmMotors(0);
+		wait1Msec(200);
+		assignArmMotors(0);
 		forwardDistance(127, 1300, false, false);
 		assignMogoMotors(-10);
-		assignArmMotors(127);
+		assignArmMotors(50);
 		wait1Msec(200);
-		assignArmMotors(10);
+		assignArmMotors(0);
 		forwardDistance(127, 1430, false, false);
 		assignMogoMotors(127);
 		assignArmMotors(0);
 		motor[rollers] = 127;
 		assignFlipFlop(-127);
 		wait1Msec(1000);
-		assignMogoMotors(20);
+
 		forwardDistance(127, 1660, true, false); //240
+		assignMogoMotors(30);
 		//forwardDistance(127, 1650, true, false);
 		assignArmMotors(-127);
 		//wait1Msec(350);
@@ -112,18 +114,19 @@ void autonomousStationary(bool reverse, bool extraCones){
 		assignMogoMotors(0);
 	}
 	else {
-		backwardDistance(127, 200);
+		assignMogoMotors(-127);
+		backwardDistance(127, 400);
+		assignArmMotors(-100);
 		turnLeft(127, 78, reverse);
+		assignMogoMotors(-10);
+		assignArmMotors(0);
 		forwardTime(127, 2100);
-		backwardDistance(127, 200);
-		turnRight(127, 105, reverse);
+		backwardDistance(127, 300);
+		turnRight(127, 135, reverse);
 		forwardDistance(127, 500);
 		forwardDistance(50, 100, false, true);
-		assignArmMotors(50);
 		assignMogoMotors(127);
-		wait1Msec(300);
-		assignArmMotors(0);
-		wait1Msec(800);
+		wait1Msec(1100);
 		assignMogoMotors(0);
 	}
 }
@@ -267,7 +270,9 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 
 	if (fivept) //Code to run for 5 pt auton
 	{
+		assignArmMotors(-50);
 		turnLeft(127,125,reverse);
+		assignArmMotors(0);
 		//backwardDistance(127, 300);
 		if (tenpt){
 			forwardDistance(127, 800);
@@ -278,13 +283,15 @@ void autonomousConeIn20Pt(bool reverse, bool stopAfterTime, bool fivept, bool te
 		//wait1Msec(200);
 		assignMogoMotors(-127);
 		assignFlipFlop(-127);
-		assignArmMotors(-5);
+		assignArmMotors(-10);
 		backwardDistance(127, 300);
 		wait1Msec(400);
 		assignMogoMotors(0);
 		assignFlipFlop(0);
 		motor[rollers] = -127;
 		assignArmMotors(50);
+		forwardDistance(127, 200);
+		assignArmMotors(20);
 		backward(127,1000);
 		motor[rollers] = 0;
 		return; //Exit from autonomous since 5 point auton is complete

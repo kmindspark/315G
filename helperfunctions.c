@@ -3,13 +3,13 @@
 #define BOTTOMARMPOS 1400 //was 1575 before
 #define LOADERARMPOS 2060
 #define REALLOADERARMPOS 1800
-#define STATIONARYARMPOS 2200
+#define STATIONARYARMPOS 2215
 #define KP_WHEELS_FORWARD 1.1 //0.8 //TODO: experiment with scaling power polynomially (perhaps quadratically) instead of linearly when braking
 #define KP_WHEELS_ANGLE 0.06
 #define KP_WHEELS_LOCK_ANGLE 1.2
 #define KP_ARM 0.35
-#define KP_CORRECTDRIVE 0.8
-#define EARLYBRAKEDEGREES 99
+#define KP_CORRECTDRIVE 0.25
+#define EARLYBRAKEDEGREES 105 //99
 #define EARLYBRAKEDEGREESMOGO 75
 #define STRAIGHTBRAKEPOWER 87
 #define ANGLEBRAKEPOWER 40//70
@@ -36,9 +36,9 @@ int encoderAverage(int one, int two){
 
 task closeRollersTask(){
 	motor[rollers] = 127;
-	wait1Msec(500);
+	wait1Msec(700);
 	rollersOpen = false;
-	motor[rollers] = 35;
+	motor[rollers] = 45;
 }
 
 void closeRollers()
@@ -92,10 +92,11 @@ void forwardDistance(int power, int distance, bool brake, bool clear){
 		SensorValue[leftEncoder] = 0;
 		SensorValue[rightEncoder] = 0;
 	}
+	int origGyro = SensorValue[gyro];
 	assignDriveMotors(power, power);
 	int difference;
 	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 50 && time1[T2] < distance + 2000){
-		difference = KP_CORRECTDRIVE*(abs(SensorValue[leftEncoder]) - abs(SensorValue[rightEncoder]));
+		difference = KP_CORRECTDRIVE*(SensorValue[gyro]-origGyro);//KP_CORRECTDRIVE*(abs(SensorValue[leftEncoder]) - abs(SensorValue[rightEncoder]));
 		assignDriveMotors(power - difference, power + difference);
 	}
 	if (brake){
@@ -111,10 +112,11 @@ void backwardDistance(int power, int distance, bool brake, bool clear){
 		SensorValue[leftEncoder] = 0;
 		SensorValue[rightEncoder] = 0;
 	}
+	int origGyro = SensorValue[gyro];
 	assignDriveMotors(-power, -power);
 	int difference;
 	while (encoderAverage(SensorValue[leftEncoder], SensorValue[rightEncoder]) < distance - 50 && time1[T2] < distance + 2000){
-		difference = KP_CORRECTDRIVE*(abs(SensorValue[leftEncoder]) - abs(SensorValue[rightEncoder]));
+		difference = KP_CORRECTDRIVE*(SensorValue[gyro]-origGyro);//KP_CORRECTDRIVE*(abs(SensorValue[leftEncoder]) - abs(SensorValue[rightEncoder]));
 		assignDriveMotors(-power + difference, -power + difference);
 	}
 	if (brake){
